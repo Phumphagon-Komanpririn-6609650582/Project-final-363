@@ -1,11 +1,12 @@
 import logo from './logo.svg';
 import React, { useState } from 'react';
 import './App.css';
-import Header from './components/header';
-import Navbar from './components/navbar';
+import Header from './components/Header';
+import Navbar from './components/Navbar';
 import Home from './components/Home';
 import SportSelection from './components/Sport';
 import TennisCourt from './components/TennisCourt';
+import Attention from './components/Attention';
 
 function App() {
   const [activeMenu, setActiveMenu] = useState('หน้าหลัก');
@@ -41,7 +42,7 @@ function App() {
         return <Home onChangePage={(pageName) => setCurrentView(pageName)} />;
 
       case 'ประกาศข่าวสาร':
-        return <div style={{ padding: '20px' }}><h2>ประกาศข่าวสาร</h2></div>;
+        return <Attention />;
 
       case 'การจองของฉัน':
         return <div style={{ padding: '20px' }}><h2>การจองของฉัน</h2></div>;
