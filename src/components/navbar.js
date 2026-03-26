@@ -7,6 +7,7 @@ function Navbar({ activeMenu, setActiveMenu }) {
     { name: 'การจองของฉัน', icon: 'fa-solid fa-list-ul' },
   ];
   return (
+    // Navbar container
     <nav className="navbar-container">
 
       <div className="logo-section">
