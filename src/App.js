@@ -45,7 +45,7 @@ function App() {
         return <Attention />;
 
       case 'การจองของฉัน':
-        return <div style={{ padding: '20px' }}><h2>การจองของฉัน</h2></div>;
+        return <div style={{ padding: '20px' }}><h2>การจองของฉัน รอ Db</h2></div>;
 
       default:
         return <Home onChangePage={(pageName) => setCurrentView(pageName)} />;
