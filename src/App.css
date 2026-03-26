@@ -206,7 +206,6 @@
   align-items: center;
   gap: 0.9375rem; 
   color: white;
-  font-size: 1.375rem; 
   font-weight: bold;
   padding: 0 1.25rem;
   text-align: left;
@@ -223,7 +222,7 @@
 .karaoke-card span,
 .study-card span,
 .sport-card span{
-  font-size: 1.25rem; 
+  font-size: 1.3rem; 
   line-height: 1.2;
   font-family: 'Itim', cursive; 
 }
@@ -498,13 +497,13 @@
 
 .alert-content strong {
   display: block;
-  font-size: 1rem;
+  font-size: 1.3rem;
   margin-bottom: 0.25rem;
 }
 
 .alert-content p {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 1.25rem;
   line-height: 1.4;
 }
 
