@@ -9,20 +9,20 @@
 /* ส่วนเนื้อหาฝั่งขวาที่เหลือจาก Navbar */
 .main-wrapper {
   flex: 1;
-  margin-left: 15rem; /* 240px */
+  margin-left: 15rem;
   display: flex;
   flex-direction: column;
 }
 
 /* --- Navbar Styles --- */
 .navbar-container {
-  width: 15rem; /* 240px */
+  width: 15rem;
   height: 100vh;
   background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
-  padding: 1.25rem 0; /* 20px */
-  border-right: 0.0625rem solid #EEEEEE; /* 1px */
+  padding: 1.25rem 0;
+  border-right: 0.0625rem solid #EEEEEE; 
   position: fixed;
   left: 0;
   top: 0;
@@ -33,30 +33,30 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 2.5rem; /* 40px */
-  padding: 0 1.25rem; /* 20px */
+  margin-bottom: 2.5rem;
+  padding: 0 1.25rem;
 }
 
 .logo-circle {
-  width: 3.75rem; /* 60px */
+  width: 3.75rem;
   height: 3.75rem;
   border-radius: 50%;
   background-color: #D1E4FF;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0.625rem; /* 10px */
+  margin-bottom: 0.625rem;
 }
 
 .logo-text {
   font-weight: bold;
   color: #0056D2;
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem;
   text-align: center;
 }
 
 .brand-name {
-  font-size: 1.5rem; /* 18px */
+  font-size: 1.5rem;
   color: #333;
   margin: 0;
   font-weight: bold;
@@ -66,18 +66,18 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.625rem; /* 10px */
-  padding: 0 0.9375rem; /* 15px */
+  gap: 0.625rem; 
+  padding: 0 0.9375rem; 
 }
 
 .menu-item {
   display: flex;
   align-items: center;
-  padding: 0.75rem 0.9375rem; /* 12px 15px */
-  border-radius: 0.625rem; /* 10px */
+  padding: 0.75rem 0.9375rem; 
+  border-radius: 0.625rem; 
   color: #666;
   cursor: pointer;
-  font-size: 1.3rem; /* 16px */
+  font-size: 1.3rem; 
   transition: 0.3s;
 }
 
@@ -97,8 +97,8 @@
 }
 
 .menu-item i {
-  width: 1.5625rem; /* 25px */
-  margin-right: 0.75rem; /* 12px */
+  width: 1.5625rem; 
+  margin-right: 0.75rem; 
 }
 
 .logout-section {
@@ -113,8 +113,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 4.375rem; /* 70px */
-  padding: 0 1.875rem; /* 30px */
+  height: 4.375rem; 
+  padding: 0 1.875rem;
   background-color: #FFFFFF;
   border-bottom: 0.0625rem solid #EEEEEE;
 }
@@ -125,17 +125,17 @@
 }
 
 .header-right {
-  gap: 1.25rem; /* 20px */
+  gap: 1.25rem;
 }
 
 .header-text {
   color: #333333;
-  font-size: 1.3rem; /* 16px */
+  font-size: 1.3rem;
   font-weight: 500;
 }
 
 .bell-icon {
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem;
   color: #666666;
   cursor: pointer;
 }
@@ -144,7 +144,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 2.8125rem; /* 45px */
+  width: 2.8125rem;
   height: 2.8125rem;
   border-radius: 50%;
   background-color: #E6E0F8;
@@ -152,7 +152,7 @@
 }
 
 .user-avatar i {
-  font-size: 1.375rem; /* 22px */
+  font-size: 1.375rem;
   color: #8A6FF7;
 }
 
@@ -161,7 +161,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 3.125rem; /* 50px */
+  padding-top: 3.125rem;
 }
 
 .select-title {
@@ -169,8 +169,8 @@
   font-size: 2rem; 
   color: #4A4A4A; 
   font-weight: 400; 
-  margin-top: 2.5rem; /* 40px */
-  margin-bottom: 3.125rem; /* 50px */
+  margin-top: 2.5rem;
+  margin-bottom: 3.125rem;
   text-align: center;
   text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.05); 
 }
@@ -185,9 +185,9 @@
 }
 
 .category-card {
-  width: 17.5rem; /* 280px */
-  height: 12.5rem; /* 200px */
-  border-radius: 3.75rem; /* 60px */
+  width: 17.5rem;
+  height: 12.5rem; 
+  border-radius: 3.75rem; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -197,23 +197,23 @@
 }
 
 .category-card:hover {
-  transform: translateY(-0.5rem); /* -8px */
+  transform: translateY(-0.5rem); 
   box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.15);
 }
 
 .card-content {
   display: flex;
   align-items: center;
-  gap: 0.9375rem; /* 15px */
+  gap: 0.9375rem; 
   color: white;
-  font-size: 1.375rem; /* 22px */
+  font-size: 1.375rem; 
   font-weight: bold;
   padding: 0 1.25rem;
   text-align: left;
 }
 
 .card-content i {
-  font-size: 2.8125rem; /* 45px */
+  font-size: 2.8125rem; 
 }
 
 .sport-card { background-color: #2D9CDB; }
@@ -223,7 +223,7 @@
 .karaoke-card span,
 .study-card span,
 .sport-card span{
-  font-size: 1.25rem; /* 18px */
+  font-size: 1.25rem; 
   line-height: 1.2;
   font-family: 'Itim', cursive; 
 }
@@ -271,4 +271,185 @@
 .breadcrumb {
   font-family: 'Itim', cursive;
   font-size: 1.1rem;
+}
+
+/* --- Booking Page Styles --- */
+.booking-page-container {
+  padding: 2rem;
+  position: relative;
+}
+
+.date-display-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.date-box {
+  text-align: right;
+}
+
+.date-badge {
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.05);
+  font-weight: bold;
+}
+
+.court-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.court-booking-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+}
+
+.court-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.court-details {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.court-thumbnail {
+  width: 15rem;
+  height: 9rem;
+  border-radius: 1rem;
+  object-fit: cover;
+}
+
+.court-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+}
+
+.court-info p {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.time-slots {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.time-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.time-btn.available {
+  background-color: #48BB78; 
+}
+
+.time-btn.available:hover {
+  background-color: #38A169;
+  transform: translateY(-0.125rem);
+}
+
+.time-btn.unavailable {
+  background-color: #FC8181; 
+  cursor: not-allowed;
+}
+
+/* --- Modal (Popup) Styles --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  width: 90%;
+  max-width: 40rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,0.2);
+  animation: popIn 0.3s ease-out forwards;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-title {
+  margin-top: 0;
+  font-family: 'Itim', cursive;
+  font-size: 1.75rem;
+}
+
+.modal-icon {
+  margin: 1.5rem 0;
+}
+
+.warning-text {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn-confirm {
+  background-color: #48BB78;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #ECC94B;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
 }

@@ -5,6 +5,7 @@ import Header from './components/header';
 import Navbar from './components/navbar';
 import Home from './components/Home';
 import SportSelection from './components/Sport';
+import TennisCourt from './components/TennisCourt';
 
 function App() {
   const [activeMenu, setActiveMenu] = useState('หน้าหลัก');
@@ -17,8 +18,17 @@ function App() {
         if (currentView === 'main') {
           return <Home onChangePage={(pageName) => setCurrentView(pageName)} />;
         } else if (currentView === 'sport') {
-          return <SportSelection onBack={() => setCurrentView('main')} />;
+          return <SportSelection 
+                  onBack={() => setCurrentView('main')} 
+                  onSelectCourt={(courtType) => {
+                     if (courtType === 'Tennis Court') setCurrentView('tennis_court');
+                   }}
+                   />;
         }
+        else if (currentView === 'tennis_court') {
+          return <TennisCourt onBack={() => setCurrentView('sport')} />;
+        }
+        
         else if (currentView === 'karaoke') {
           // รอสร้างไฟล์ KaraokeSelection แล้วค่อยเอาคอมเมนต์ออก
           // return <KaraokeSelection onBack={() => setCurrentView('main')} />;
@@ -28,7 +38,7 @@ function App() {
           // return <StudySelection onBack={() => setCurrentView('main')} />;
           return <div>หน้าห้องติว (กำลังสร้าง...) <button onClick={() => setCurrentView('main')}>กลับ</button></div>;
         }
-        return <Home />;
+        return <Home onChangePage={(pageName) => setCurrentView(pageName)} />;
 
       case 'ประกาศข่าวสาร':
         return <div style={{ padding: '20px' }}><h2>ประกาศข่าวสาร</h2></div>;
@@ -37,7 +47,7 @@ function App() {
         return <div style={{ padding: '20px' }}><h2>การจองของฉัน</h2></div>;
 
       default:
-        return <Home />;
+        return <Home onChangePage={(pageName) => setCurrentView(pageName)} />;
     }
   };
 
