@@ -16,24 +16,14 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate(); 
 
-
-function App() {
-  // State สำหรับเช็คว่าเข้าสู่ระบบแล้วหรือยัง
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-  // 2. เรียกใช้ useNavigate สำหรับเปลี่ยน URL แทนการใช้ State
-  const navigate = useNavigate(); 
-
-  // ถ้ายังไม่ได้ Login ให้แสดงแค่หน้า Login
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
   }
-  // ถ้า Login แล้ว ให้แสดงโครงสร้างแอปปกติ
+
   return (
     <div className="App">
-      {/* 3. ลบ Props activeMenu ออก เพราะเดี๋ยวเราจะให้ Navbar จัดการเรื่อง Active ผ่าน URL แทน */}
       <Navbar />
- 
+      
       <div className="main-wrapper">
         <Header />
         <main className="content-area">
@@ -43,12 +33,6 @@ function App() {
             <Route path="/" element={<Home />} />
             
             {/* --- หมวดหมู่กีฬา --- */}
-          {/* 4. ใช้ Routes และ Route จัดการหน้าต่างๆ แทน switch...case เดิม */}
-          <Routes>
-            
-            {/* --- หน้าหลักและหมวดหมู่ย่อย --- */}
-            <Route path="/" element={<Home onChangePage={(pageName) => navigate(`/${pageName}`)} />} />
-            
             <Route path="/sport" element={
               <SportSelection 
                 onBack={() => navigate('/')} 
@@ -88,17 +72,6 @@ function App() {
             {/* --- หมวดหมู่ห้องเรียน --- */}
             <Route path="/study" element={
               <div style={{ padding: '2rem' }}><h2>หน้าห้องติว (กำลังสร้าง...)</h2> <button onClick={() => navigate('/')}>กลับ</button></div>
-            
-            <Route path="/tennis_court" element={
-              <TennisCourt onBack={() => navigate('/sport')} />
-            } />
-            
-            <Route path="/karaoke" element={
-              <div>หน้าคาราโอเกะ (กำลังสร้าง...) <button onClick={() => navigate('/')}>กลับ</button></div>
-            } />
-            
-            <Route path="/study" element={
-              <div>หน้าห้องติว (กำลังสร้าง...) <button onClick={() => navigate('/')}>กลับ</button></div>
             } />
 
             {/* --- เมนูจากแถบ Navbar --- */}
@@ -109,12 +82,6 @@ function App() {
 
             {/* หน้าเผื่อฉุกเฉิน */}
             <Route path="*" element={<Home />} />
-              <div style={{ padding: '20px' }}><h2>การจองของฉัน รอ Db</h2></div>
-            } />
-
-            {/* หน้าเผื่อฉุกเฉิน (ถ้าพิมพ์ URL ผิด ให้เด้งกลับมาหน้า Home) */}
-            <Route path="*" element={<Home onChangePage={(pageName) => navigate(`/${pageName}`)} />} />
-
           </Routes>
 
         </main>
