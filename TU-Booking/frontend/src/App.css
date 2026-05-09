@@ -647,3 +647,51 @@
 .login-button:hover {
   background-color: #4299E1;
 }
+
+/* --- Karaoke Page Styles --- */
+.karaoke-selection-container {
+  background-color: #E0D4EB; /* สีม่วงอ่อนตามรูป */
+  padding: 2rem;
+}
+
+/* จัด Grid ให้อยู่กึ่งกลางแนวนอน และมีระยะห่างจากปุ่มย้อนกลับที่พอดี */
+.karaoke-card-grid {
+ display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.karaoke-item-card {
+  width: 20rem;
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+  transition: 0.3s;
+  cursor: pointer;
+  text-align: center;
+}
+
+.karaoke-item-card:hover {
+  transform: translateY(-0.5rem);
+}
+
+.karaoke-img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.karaoke-name {
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.breadcrumb {
+  font-family: 'Itim', cursive;
+  font-size: 1.1rem;
+}
