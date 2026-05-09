@@ -1,33 +1,16 @@
 import React, { useState } from 'react';
-// นำเข้ารูปภาพคาราโอเกะ
-import roomImg from '../assets/Karaoke Banner.png'; 
 
-const initialRoomData = [
-  {
-    id: 'S',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size S',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 4 ท่าน (ค่าสาธารณูปโภค 150/ชม.)',
-    img:  'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=67bcff47-73e7-3081-f721-3a0d2d98bd45',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: false },
-      { time: '20:00', isAvailable: false }, { time: '21:00', isAvailable: true },
-    ]
-  },
+const initialMusicData = [
   {
     id: 'M1',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size M Room 1',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 8 ท่าน (ค่าสาธารณูปโภค 180/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=c311092b-250f-d341-19e9-3a0d2d984e3e',
+    title: 'Melody Sphere Zone Music',
+    name: 'Music Practice Room 1',
+    desc: 'ห้องซ้อมดนตรีพร้อมเครื่องดนตรีมาตรฐานครบครัน (ค่าสาธารณูปโภค 120/ชม.)',
+    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=cac78969-20f9-8520-17a2-3a0d2d9c5992',
     slots: [
       { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
       { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
+      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: false },
       { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
       { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: true },
       { time: '20:00', isAvailable: true }, { time: '21:00', isAvailable: true },
@@ -35,40 +18,10 @@ const initialRoomData = [
   },
   {
     id: 'M2',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size M Room 2',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 8 ท่าน (ค่าสาธารณูปโภค 180/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=6847e739-409c-dfa4-7849-3a0d2d981d94',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: true }, { time: '21:00', isAvailable: true },
-    ]
-  },
-  {
-    id: 'L',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size L',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 12 ท่าน (ค่าสาธารณูปโภค 210/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=42ba0127-2e94-2a63-f3b2-3a0d2d9786d6',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: false },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: true }, { time: '21:00', isAvailable: true },
-    ]
-  },
-  {
-    id: 'XL',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size XL',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 20 ท่าน (ค่าสาธารณูปโภค 250/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=3ec35189-7e3c-f282-cdef-3a0d2d96eb03',
+    title: 'Melody Sphere Zone Music',
+    name: 'Music Practice Room 2',
+    desc: 'ห้องซ้อมดนตรีพร้อมเครื่องดนตรีมาตรฐานครบครัน (ค่าสาธารณูปโภค 120/ชม.)',
+    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=34233a40-b98e-0435-8643-3a0d2d9cafcb',
     slots: [
       { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
       { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
@@ -80,11 +33,10 @@ const initialRoomData = [
   }
 ];
 
-function KaraokeBooking({ onBack }) {
+function MusicBooking({ onBack }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
-
-  const [rooms, setRooms] = useState(initialRoomData);
+  const [rooms, setRooms] = useState(initialMusicData);
 
   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
     if (isAvailable) {
@@ -95,15 +47,12 @@ function KaraokeBooking({ onBack }) {
 
   const confirmBooking = () => {
     const { roomId, time } = selectedBooking;
-
     const updatedRooms = rooms.map(room => {
       if (room.id === roomId) {
         return {
           ...room,
           slots: room.slots.map(slot => {
-            if (slot.time === time) {
-              return { ...slot, isAvailable: false };
-            }
+            if (slot.time === time) return { ...slot, isAvailable: false };
             return slot;
           })
         };
@@ -114,16 +63,17 @@ function KaraokeBooking({ onBack }) {
     setRooms(updatedRooms);
     setIsModalOpen(false);
     setSelectedBooking(null);
-
-    alert('จองสำเร็จ!');
+    alert('จองห้องซ้อมดนตรีสำเร็จ!');
   };
 
   return (
     <div className="booking-page-container">
+      {/* Breadcrumb ย้อนกลับ */}
       <div className="breadcrumb" onClick={onBack} style={{ cursor: 'pointer', color: '#666' }}>
         <i className="fa-solid fa-chevron-left"></i> ย้อนกลับ
       </div>
 
+      {/* ส่วนแสดงวันที่ */}
       <div className="date-display-section">
          <div className="date-box">
            <span style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>วันที่จอง</span>
@@ -131,6 +81,7 @@ function KaraokeBooking({ onBack }) {
          </div>
       </div>
 
+      {/* รายการห้องซ้อม (ใช้ Class เดียวกับหน้า Tennis/Karaoke เพื่อให้ Style เหมือนกันเป๊ะ) */}
       <div className="court-list">
         {rooms.map((room) => (
           <div key={room.id} className="court-booking-card">
@@ -158,21 +109,22 @@ function KaraokeBooking({ onBack }) {
         ))}
       </div>
 
-      {/* --- Popup (Modal) --- */}
+      {/* --- Popup (Modal) ยืนยันการจอง --- */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}> 
           <div className="modal-content" onClick={(e) => e.stopPropagation()}> 
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
             <h2 className="modal-title">ยืนยันการจอง</h2>
             <div className="modal-icon">
-              <i className="fa-solid fa-calendar-check" style={{ fontSize: '4rem', color: '#333' }}></i>
+              {/* เปลี่ยนเป็นไอคอน Guitar หรือ Music สำหรับหน้า Music */}
+              <i className="fa-solid fa-guitar" style={{ fontSize: '4rem', color: '#333' }}></i>
             </div>
             
             <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>SPOT : {selectedBooking?.roomName}</h3>
             <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
               วันที่ : {selectedBooking?.date} เวลา : {selectedBooking?.time} น.
             </p>
-            <p style={{ color: '#666', marginBottom: '1.5rem' }}>หมวดหมู่: ห้องคาราโอเกะ</p>
+            <p style={{ color: '#666', marginBottom: '1.5rem' }}>หมวดหมู่: ห้องซ้อมดนตรี</p>
             
             <p className="warning-text">
               กรุณาดำเนินการเช็คอินที่หน้า Counter ก่อนเวลา 15 นาที<br/>
@@ -192,4 +144,4 @@ function KaraokeBooking({ onBack }) {
   );
 }
 
-export default KaraokeBooking;
+export default MusicBooking;

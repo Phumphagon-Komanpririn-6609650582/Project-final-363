@@ -9,7 +9,8 @@ import TennisCourt from './components/TennisCourt';
 import Attention from './components/Attention';
 import Login from './components/Login';
 import Karaoke from './components/Karaoke';
-import KaraokeBooking from './components/KaraokeBooking'; // 1. เปลี่ยนจาก KaraokeRoom เป็น KaraokeBooking
+import KaraokeBooking from './components/KaraokeBooking'; 
+import MusicBooking from './components/MusicBooking'; // 1. Import หน้า Music ที่เพิ่งสร้างใหม่
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -42,26 +43,30 @@ function App() {
             } />
             <Route path="/tennis_court" element={<TennisCourt onBack={() => navigate('/sport')} />} />
           
-            {/* --- หมวดหมู่คาราโอเกะ --- */}
+            {/* --- หมวดหมู่คาราโอเกะ & ดนตรี --- */}
             {/* หน้าเลือกประเภท (Karaoke / Music Room) */}
             <Route path="/karaoke" element={
               <Karaoke 
                 onBack={() => navigate('/')} 
                 onSelectRoom={(roomName) => {
-                  // ถ้าเลือก Melody Sphere Zone Karaoke ให้ไปหน้าจองเวลา
+                  // แยกเงื่อนไขการไปแต่ละหน้าให้ชัดเจน
                   if (roomName === 'Melody Sphere Zone Karaoke') {
                     navigate('/karaoke_booking'); 
                   } else if (roomName === 'Melody Sphere Zone Music Room') {
-                    // เผื่อทำหน้าแยกสำหรับ Music Room ในอนาคต ตอนนี้ส่งไปที่เดียวกันก่อนได้ครับ
-                    navigate('/karaoke_booking');
+                    navigate('/music_booking'); // 2. ให้ไปที่หน้า MusicBooking แทน
                   }
                 }}
               />
             } />
 
-            {/* หน้าจองเวลาห้องคาราโอเกะ (ที่เราเพิ่งสร้าง) */}
+            {/* หน้าจองเวลาห้องคาราโอเกะ */}
             <Route path="/karaoke_booking" element={
               <KaraokeBooking onBack={() => navigate('/karaoke')} />
+            } />
+
+            {/* 3. หน้าจองเวลาห้องซ้อมดนตรี (Music Room) */}
+            <Route path="/music_booking" element={
+              <MusicBooking onBack={() => navigate('/karaoke')} />
             } />
             
             {/* --- หมวดหมู่ห้องเรียน --- */}
