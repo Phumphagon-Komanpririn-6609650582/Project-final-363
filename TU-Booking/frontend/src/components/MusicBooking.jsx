@@ -109,15 +109,14 @@ function MusicBooking({ onBack }) {
         ))}
       </div>
 
-      {/* --- Popup (Modal) ยืนยันการจอง --- */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}> 
           <div className="modal-content" onClick={(e) => e.stopPropagation()}> 
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
             <h2 className="modal-title">ยืนยันการจอง</h2>
             <div className="modal-icon">
-              {/* เปลี่ยนเป็นไอคอน Guitar หรือ Music สำหรับหน้า Music */}
-              <i className="fa-solid fa-guitar" style={{ fontSize: '4rem', color: '#333' }}></i>
+
+              <i className="fa-solid fa-calendar-check" style={{ fontSize: '4rem', color: '#333' }}></i>
             </div>
             
             <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>SPOT : {selectedBooking?.roomName}</h3>
