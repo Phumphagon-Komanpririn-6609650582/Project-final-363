@@ -12,6 +12,17 @@ function Navbar() {
     { name: 'การจองของฉัน', icon: 'fa-solid fa-list-ul', path: '/my-booking' },
   ];
 
+  const homeSubPages = [
+  '/sport', 
+  '/tennis_court', 
+  '/karaoke', 
+  '/karaoke_booking', 
+  '/music_booking', 
+  '/study', 
+  '/study_booking', 
+  '/krom_luang_booking'
+];
+
   return (
     <nav className="navbar-container">
 
@@ -25,7 +36,7 @@ function Navbar() {
           // 4. เช็คว่า URL ปัจจุบัน ตรงกับ path ของเมนูนี้หรือไม่ (ถ้าตรงให้เป็น true)
           // ปรับเงื่อนไขนิดหน่อยเพื่อให้หน้าย่อยๆ ของกีฬา ยังคง highlight ที่หน้าหลัก
           const isActive = location.pathname === menu.path || 
-                          (menu.path === '/' && (location.pathname === '/sport' || location.pathname === '/tennis_court' || location.pathname === '/karaoke' || location.pathname === '/study'));
+                 (menu.path === '/' && homeSubPages.includes(location.pathname));
 
           return (
             // 5. เปลี่ยน <div> เป็น <Link> และใช้ 'to' แทน 'onClick'

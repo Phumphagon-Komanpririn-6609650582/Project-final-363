@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BookingDateSelector from './BookingDateSelector';
 
 const initialCourtData = [
   {
@@ -33,9 +34,14 @@ function TennisCourt({ onBack }) {
 
   const [courts, setCourts] = useState(initialCourtData);
 
-  const handleSlotClick = (courtId, courtName, time, isAvailable) => {
+  const [selectedDate, setSelectedDate] = useState(
+     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
+  );
+
+  const handleSlotClick = (roomId, roomName, time, isAvailable) => {
     if (isAvailable) {
-      setSelectedBooking({ courtId, courtName, time, date: '20/03/69' });
+      // ✅ แก้ไข: ใช้ selectedDate จาก State ตรงๆ ข้อมูลใน Popup จะได้ตรงกับวันที่เลือก
+      setSelectedBooking({ roomId, roomName, time, date: selectedDate });
       setIsModalOpen(true);
     }
   };
@@ -67,16 +73,17 @@ function TennisCourt({ onBack }) {
   };
 
   return (
-    <div className="booking-page-container">
+    <div className="booking-page-container" style={{ backgroundColor: '#EEF0F8' }}>
       <div className="breadcrumb" onClick={onBack} style={{ cursor: 'pointer', color: '#666' }}>
         <i className="fa-solid fa-chevron-left"></i> ย้อนกลับ
       </div>
 
-      <div className="date-display-section">
-         <div className="date-box">
-           <span style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>วันที่จอง</span>
-           <div className="date-badge"><i className="fa-regular fa-calendar"></i> 20/03/69</div>
-         </div>
+      <div className="date-display-section" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
+         {/* 👉 เรียกใช้ Component เลือกวันที่ตรงนี้ */}
+         <BookingDateSelector 
+            selectedDate={selectedDate} 
+            onDateChange={(newDate) => setSelectedDate(newDate)} 
+         />
       </div>
 
       <div className="court-list">
@@ -123,7 +130,7 @@ function TennisCourt({ onBack }) {
             
             <p className="warning-text">
               กรุณาดำเนินการเช็คอินที่หน้า Counter ก่อนเวลา 15 นาที<br/>
-              หรือต้องการยกเลิกสามารถดำเนินการยกเลิกการจองได้ก่อนเวลา 15 นาที
+              หรือต้องการยกเลิกสามารถดำเนินการยกเลิกการจองได้ก่อนเวลา 120 นาที
             </p>
 
             <div className="modal-actions">

@@ -158,6 +158,7 @@
 
 /* --- Home Styles --- */
 .home-container {
+  background-color: #EEF0F8;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -228,6 +229,7 @@
 }
 
 .sport-selection-container {
+  background-color: #EEF0F8;
   padding: 2rem;
 }
 
@@ -650,7 +652,8 @@
 
 /* --- Karaoke Page Styles --- */
 .karaoke-selection-container {
-  background-color: #E0D4EB; /* สีม่วงอ่อนตามรูป */
+  background-color: #EEF0F8;
+  min-height: 100vh;
   padding: 2rem;
 }
 
@@ -694,4 +697,48 @@
 .breadcrumb {
   font-family: 'Itim', cursive;
   font-size: 1.1rem;
+}
+
+/* --- Study Page Styles --- */
+.study-selection-container {
+  background-color: #EEF0F8;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.study-card-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.study-item-card {
+  width: 20rem;
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+  transition: 0.3s;
+  cursor: pointer;
+  text-align: center;
+}
+
+.study-item-card:hover {
+  transform: translateY(-0.5rem);
+}
+
+.study-img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.study-name {
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+  font-family: 'Itim', cursive;
 }
