@@ -10,7 +10,11 @@ import Attention from './components/Attention';
 import Login from './components/Login';
 import Karaoke from './components/Karaoke';
 import KaraokeBooking from './components/KaraokeBooking'; 
-import MusicBooking from './components/MusicBooking'; // 1. Import หน้า Music ที่เพิ่งสร้างใหม่
+import MusicBooking from './components/MusicBooking';
+import Study from './components/Study'; 
+// 1. Import หน้าจองห้องเรียนทั้ง 2 ตึก
+import StudyBooking from './components/StudyBooking';
+import KromLuangBooking from './components/KromLuangBooking';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -44,34 +48,45 @@ function App() {
             <Route path="/tennis_court" element={<TennisCourt onBack={() => navigate('/sport')} />} />
           
             {/* --- หมวดหมู่คาราโอเกะ & ดนตรี --- */}
-            {/* หน้าเลือกประเภท (Karaoke / Music Room) */}
             <Route path="/karaoke" element={
               <Karaoke 
                 onBack={() => navigate('/')} 
                 onSelectRoom={(roomName) => {
-                  // แยกเงื่อนไขการไปแต่ละหน้าให้ชัดเจน
                   if (roomName === 'Melody Sphere Zone Karaoke') {
                     navigate('/karaoke_booking'); 
                   } else if (roomName === 'Melody Sphere Zone Music Room') {
-                    navigate('/music_booking'); // 2. ให้ไปที่หน้า MusicBooking แทน
+                    navigate('/music_booking'); 
                   }
                 }}
               />
             } />
 
-            {/* หน้าจองเวลาห้องคาราโอเกะ */}
-            <Route path="/karaoke_booking" element={
-              <KaraokeBooking onBack={() => navigate('/karaoke')} />
-            } />
-
-            {/* 3. หน้าจองเวลาห้องซ้อมดนตรี (Music Room) */}
-            <Route path="/music_booking" element={
-              <MusicBooking onBack={() => navigate('/karaoke')} />
-            } />
+            <Route path="/karaoke_booking" element={<KaraokeBooking onBack={() => navigate('/karaoke')} />} />
+            <Route path="/music_booking" element={<MusicBooking onBack={() => navigate('/karaoke')} />} />
             
             {/* --- หมวดหมู่ห้องเรียน --- */}
             <Route path="/study" element={
-              <div style={{ padding: '2rem' }}><h2>หน้าห้องติว (กำลังสร้าง...)</h2> <button onClick={() => navigate('/')}>กลับ</button></div>
+              <Study 
+                onBack={() => navigate('/')}
+                onSelectRoom={(roomName) => {
+                  // แยกเงื่อนไขการไปแต่ละตึก
+                  if (roomName === 'Puey Ungphakorn Library') {
+                    navigate('/study_booking'); 
+                  } else if (roomName === 'Krom Luang Naradhiwas Rajanagarinda Learning Centre') {
+                    navigate('/krom_luang_booking'); 
+                  }
+                }}
+              />
+            } />
+            
+            {/* หน้าจองห้องตึกป๋วย */}
+            <Route path="/study_booking" element={
+              <StudyBooking onBack={() => navigate('/study')} />
+            } />
+
+            {/* หน้าจองห้องตึกกรมหลวงฯ */}
+            <Route path="/krom_luang_booking" element={
+              <KromLuangBooking onBack={() => navigate('/study')} />
             } />
 
             {/* --- เมนูจากแถบ Navbar --- */}

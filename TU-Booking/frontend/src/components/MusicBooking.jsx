@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import BookingDateSelector from './BookingDateSelector';
 const initialMusicData = [
   {
     id: 'M1',
@@ -38,9 +38,15 @@ function MusicBooking({ onBack }) {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [rooms, setRooms] = useState(initialMusicData);
 
+  // 👉 สร้าง State สำหรับวันที่ที่เลือก (เริ่มต้นเป็นวันที่วันนี้)
+  const [selectedDate, setSelectedDate] = useState(
+      new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
+  );
+
   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
     if (isAvailable) {
-      setSelectedBooking({ roomId, roomName, time, date: '20/03/69' });
+      // ✅ แก้ไข: ใช้ selectedDate จาก State ตรงๆ ข้อมูลใน Popup จะได้ตรงกับวันที่เลือก
+      setSelectedBooking({ roomId, roomName, time, date: selectedDate });
       setIsModalOpen(true);
     }
   };
@@ -67,19 +73,20 @@ function MusicBooking({ onBack }) {
   };
 
   return (
-    <div className="booking-page-container">
+    <div className="booking-page-container" style={{ backgroundColor: '#EEF0F8' }}>
       {/* Breadcrumb ย้อนกลับ */}
       <div className="breadcrumb" onClick={onBack} style={{ cursor: 'pointer', color: '#666' }}>
         <i className="fa-solid fa-chevron-left"></i> ย้อนกลับ
       </div>
 
-      {/* ส่วนแสดงวันที่ */}
-      <div className="date-display-section">
-         <div className="date-box">
-           <span style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.5rem' }}>วันที่จอง</span>
-           <div className="date-badge"><i className="fa-regular fa-calendar"></i> 20/03/69</div>
-         </div>
+      <div className="date-display-section" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
+         {/* 👉 เรียกใช้ Component เลือกวันที่ตรงนี้ */}
+         <BookingDateSelector 
+            selectedDate={selectedDate} 
+            onDateChange={(newDate) => setSelectedDate(newDate)} 
+         />
       </div>
+
 
       {/* รายการห้องซ้อม (ใช้ Class เดียวกับหน้า Tennis/Karaoke เพื่อให้ Style เหมือนกันเป๊ะ) */}
       <div className="court-list">
@@ -127,7 +134,7 @@ function MusicBooking({ onBack }) {
             
             <p className="warning-text">
               กรุณาดำเนินการเช็คอินที่หน้า Counter ก่อนเวลา 15 นาที<br/>
-              หรือต้องการยกเลิกสามารถดำเนินการยกเลิกการจองได้ก่อนเวลา 15 นาที
+              หรือต้องการยกเลิกสามารถดำเนินการยกเลิกการจองได้ก่อนเวลา 120 นาที
             </p>
 
             <div className="modal-actions">
