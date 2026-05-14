@@ -19,9 +19,10 @@ const routeConfig = {
   
   '/news': { name: 'ข่าวสารและประกาศ', parent: null },
   '/my-booking': { name: 'การจองของฉัน', parent: null },
+  '/rewards': { name: 'แลกของรางวัล', parent: null },
 };
 
-function Header() {
+function Header({ userPoints }) {
   const location = useLocation();
   
   // 👉 3. สร้าง State สำหรับเปิด/ปิด Profile Dropdown
@@ -72,7 +73,7 @@ function Header() {
         </div>
 
         {/* 👉 6. ถ้า isProfileOpen เป็น true ให้โชว์กล่อง Profile */}
-        {isProfileOpen && <UserProfileDropdown />}
+        {isProfileOpen && <UserProfileDropdown userPoints={userPoints} />}
       </div>
 
     </header>
