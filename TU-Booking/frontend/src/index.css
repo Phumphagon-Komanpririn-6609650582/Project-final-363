@@ -1,13 +1,23 @@
-body {
+* {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+html, body {
+  width: 100vw; /* บังคับกว้าง 100% ของหน้าจอ */
+  min-height: 100vh;
+  overflow-x: hidden; /* ป้องกันแถบเลื่อนซ้ายขวา */
+  background-color: #F8F9FA;
+  font-family: 'system-ui', -apple-system, sans-serif;
+}
+
+/* ⚠️ ตัวการสำคัญอยู่ที่นี่! ต้องปลดล็อก max-width ที่ Vite แอบใส่ไว้ */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  max-width: none !important; /* ลบลิมิตความกว้างทิ้ง */
+  display: flex; /* ให้ root เป็น flex เพื่อให้ลูกๆ ขยายได้เต็มที่ */
 }

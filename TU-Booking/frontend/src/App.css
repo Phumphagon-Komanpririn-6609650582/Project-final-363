@@ -1,15 +1,17 @@
 /* --- Global Layout --- */
+/* --- Global Layout --- */
 .App {
   display: flex;
+  width: 100%; /* กางเต็ม #root */
   min-height: 100vh;
   background-color: #F8F9FA;
-  font-family: 'Itim', cursive; 
 }
 
 /* ส่วนเนื้อหาฝั่งขวาที่เหลือจาก Navbar */
 .main-wrapper {
-  flex: 1;
-  margin-left: 15rem;
+  flex: 1; /* 👈 คำสั่งนี้จะสั่งให้กล่องขยายเต็มพื้นที่ที่เหลือฝั่งขวาทั้งหมดอัตโนมัติ */
+  margin-left: 15rem; /* ดันหลบ Navbar (ปรับเลขให้ตรงกับความกว้าง Navbar ของคุณ) */
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
@@ -158,11 +160,12 @@
 
 /* --- Home Styles --- */
 .home-container {
-  background-color: #EEF0F8;
+  flex: 1; 
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 3.125rem;
+  padding-top: 3rem;
+  width: 100%;
 }
 
 .select-title {
@@ -229,6 +232,7 @@
 }
 
 .sport-selection-container {
+  min-height: 100vh;
   background-color: #EEF0F8;
   padding: 2rem;
 }
@@ -741,4 +745,96 @@
   font-weight: bold;
   color: #333;
   font-family: 'Itim', cursive;
+}
+
+/* --- Profile Dropdown Popup (ปรับปรุงให้สวยขึ้น) --- */
+.profile-dropdown-container {
+  position: absolute; /* ทำให้มันลอย ไม่ไปดัน Header */
+  top: 100%; /* เลื่อนลงมาอยู่ใต้ Header พอดี */
+  right: 0; /* ชิดขวาเป๊ะๆ */
+  margin-top: 1rem; /* ห่างจาก Header นิดหน่อย */
+  width: 20rem; /* ขนาดกำลังดี */
+  background-color: #FFFFFF;
+  border-radius: 1rem; /* ขอบมนสวยๆ */
+  
+  /* หัวใจสำคัญ: เพิ่มเงา (Box Shadow) ให้ดูลอยและมีมิติ */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+  border: 1px solid #EBEBEB; /* เส้นขอบบางๆ ให้ดูเนี๊ยบ */
+  
+  padding: 1.5rem;
+  z-index: 1000; /* บังคับให้ลอยอยู่เหนือของทุกอย่างในหน้าเว็บ */
+}
+
+/* ทำให้รูปโปรไฟล์วงกลมด้านในดูพรีเมียมขึ้น */
+.profile-large-avatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background-color: #F0F4FF; /* สีฟ้าอ่อนๆ สบายตา */
+  color: #0056D2; /* สีไอคอนสีน้ำเงินเข้ม */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.2rem;
+  margin: 0 auto 1.2rem auto;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); /* เงานิดๆ ด้านในวงกลม */
+}
+
+.profile-info-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555555; /* ลดความเข้มของสีตัวหนังสือลงนิดนึงให้ดูคลีน */
+}
+
+.status-badge {
+  background-color: #E6F4EA;
+  color: #1E8E3E;
+  padding: 0.2rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.profile-divider {
+  height: 1px;
+  background-color: #EFEFEF;
+  margin: 1.2rem 0;
+}
+
+.warning-section {
+  text-align: center;
+}
+
+.warning-title {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #555555;
+  margin-bottom: 0.8rem;
+}
+
+.warning-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.warning-dots .dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* เพิ่มความมีมิติให้จุดเขียว */
+}
+
+.warning-dots .dot.green {
+  background-color: #5BB974;
+}
+
+.warning-desc {
+  font-size: 0.75rem;
+  color: #999999;
 }
