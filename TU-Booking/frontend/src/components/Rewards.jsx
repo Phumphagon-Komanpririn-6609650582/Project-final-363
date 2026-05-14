@@ -12,9 +12,7 @@ function Rewards({ points, setPoints }) {
     { id: 1, name: 'น้ำดื่ม TU', points: 20, icon: 'fa-solid fa-bottle-water', color: '#4A90E2', category: 'ทั่วไป' },
     { id: 2, name: 'ดินสอ 2B / ปากกาน้ำเงิน', points: 15, icon: 'fa-solid fa-pen', color: '#F5A623', category: 'ทั่วไป' },
     { id: 3, name: 'ขนมขบเคี้ยว (Snack)', points: 30, icon: 'fa-solid fa-cookie', color: '#D0021B', category: 'ทั่วไป' },
-    { id: 4, name: 'ลูกแบดมินตัน 1 หลอด', points: 80, icon: 'fa-solid fa-table-tennis-paddle-ball', color: '#50E3C2', category: 'กีฬา' },
-    { id: 5, name: 'ยืมไม้เทนนิสฟรี 1 ครั้ง', points: 50, icon: 'fa-solid fa-baseball', color: '#B8E986', category: 'กีฬา' },
-    { id: 6, name: 'ฟรี! คาราโอเกะ 1 ชั่วโมง', points: 100, icon: 'fa-solid fa-microphone', color: '#BD10E0', category: 'บันเทิง' },
+    { id: 4, name: 'ฟรี! คาราโอเกะ 1 ชั่วโมง', points: 100, icon: 'fa-solid fa-microphone', color: '#BD10E0', category: 'บันเทิง' },
   ];
 
   const handleSelectItem = (item) => {
