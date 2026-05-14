@@ -1,7 +1,7 @@
 import React from 'react';
 
-function UserProfileDropdown() {
-  // ดึงชื่อมาจาก localStorage (ถ้าไม่มีให้ใช้ชื่อจำลองตามภาพไปก่อน)
+function UserProfileDropdown({ userPoints }) {
+  // ดึงชื่อมาจาก localStorage (ถ้าไม่มีให้ใช้ชื่อจำลองไปก่อน)
   const studentName = localStorage.getItem('studentName') || 'ภูมิภากร โกเมนไปรรินทร์';
 
   return (
@@ -28,18 +28,19 @@ function UserProfileDropdown() {
         <span>22/08/2027</span>
       </div>
 
-      {/* 👉 เพิ่มส่วน แต้มสะสม (Reward Points) ตรงนี้ครับ */}
+      {/* แต้มสะสม */}
       <div className="profile-info-row" style={{ marginTop: '0.5rem' }}>
         <span style={{ fontWeight: 'bold' }}>แต้มสะสม:</span>
         <span style={{ 
-          color: '#E31B23', /* ใช้สีแดงมธ. เพื่อให้แต้มดูโดดเด่น */
+          color: '#E31B23', 
           fontWeight: 'bold', 
           backgroundColor: '#FFF5F5', 
           padding: '0.1rem 0.6rem', 
           borderRadius: '1rem' 
         }}>
-          <i className="fa-solid fa-coins" style={{ marginRight: '0.3rem', color: '#3333FF' }}></i> 
-          150 แต้ม
+          {/* สีไอคอนสีน้ำเงินตามที่คุณปรับมา */}
+          <i className="fa-solid fa-coins" style={{ marginRight: '0.4rem', color: '#3333FF' }}></i> 
+          {userPoints !== undefined ? userPoints : 0} แต้ม
         </span>
       </div>
 

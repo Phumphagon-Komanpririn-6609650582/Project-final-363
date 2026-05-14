@@ -12,12 +12,13 @@ import Karaoke from './components/Karaoke';
 import KaraokeBooking from './components/KaraokeBooking'; 
 import MusicBooking from './components/MusicBooking';
 import Study from './components/Study'; 
-// 1. Import หน้าจองห้องเรียนทั้ง 2 ตึก
 import StudyBooking from './components/StudyBooking';
 import KromLuangBooking from './components/KromLuangBooking';
+import Rewards from './components/Rewards';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userPoints, setUserPoints] = useState(150);
   const navigate = useNavigate(); 
 
   if (!isLoggedIn) {
@@ -29,7 +30,7 @@ function App() {
       <Navbar />
       
       <div className="main-wrapper">
-        <Header />
+        <Header userPoints={userPoints} />
         <main className="content-area">
           
           <Routes>
@@ -93,6 +94,10 @@ function App() {
             <Route path="/news" element={<Attention />} />
             <Route path="/my-booking" element={
               <div style={{ padding: '20px' }}><h2>การจองของฉัน (รอระบบ Database)</h2></div>
+            } />
+
+            <Route path="/rewards" element={
+              <Rewards points={userPoints} setPoints={setUserPoints} />
             } />
 
             {/* หน้าเผื่อฉุกเฉิน */}

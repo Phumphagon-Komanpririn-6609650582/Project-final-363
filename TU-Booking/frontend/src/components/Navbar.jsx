@@ -9,6 +9,7 @@ function Navbar() {
   const menus = [
     { name: 'หน้าหลัก', icon: 'fa-solid fa-house', path: '/' },
     { name: 'ประกาศข่าวสาร', icon: 'fa-solid fa-bullhorn', path: '/news' },
+    { name: 'แลกของรางวัล', icon: 'fa-solid fa-gift', path: '/rewards' },
     { name: 'การจองของฉัน', icon: 'fa-solid fa-list-ul', path: '/my-booking' },
   ];
 

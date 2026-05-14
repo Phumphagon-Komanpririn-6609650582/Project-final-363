@@ -838,3 +838,131 @@
   font-size: 0.75rem;
   color: #999999;
 }
+
+/* --- Rewards Page (หน้าแลกของรางวัล) --- */
+.rewards-container {
+  padding: 2rem 3rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.rewards-title {
+  font-size: 2rem;
+  color: #333333;
+  margin-bottom: 0.5rem;
+}
+
+.rewards-subtitle {
+  color: #666666;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.points-highlight {
+  color: #E31B23;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.rewards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+/* การ์ดของรางวัล */
+.reward-card {
+  width: 18rem;
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: #FFFFFF;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reward-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.reward-icon-wrapper {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.reward-name {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #333333;
+}
+
+.reward-category {
+  font-size: 0.9rem;
+  color: #999999;
+  margin-bottom: 1.5rem;
+}
+
+/* ปุ่มกดแลกรางวัล */
+.btn-redeem {
+  background-color: #E31B23;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-redeem:hover:not(:disabled) {
+  background-color: #C8151D; /* สีแดงเข้มขึ้นตอนโฮเวอร์ */
+}
+
+.btn-redeem:disabled {
+  background-color: #CCCCCC;
+  cursor: not-allowed;
+}
+
+.reward-error-text {
+  font-size: 0.8rem;
+  color: #E31B23;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* กล่องสรุปคะแนนใน Popup */
+.modal-summary-box {
+  background-color: #F8F9FA;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.summary-row.deduct {
+  color: #E31B23;
+}
+
+.summary-row.balance {
+  color: #1E8E3E;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+.summary-divider {
+  height: 1px;
+  background-color: #DDDDDD;
+  margin: 0.8rem 0;
+}
