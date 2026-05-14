@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react'; // 👉 1. นำเข้า useState
 import { useLocation } from 'react-router-dom';
+import UserProfileDropdown from './UserProfileDropdown'; // 👉 2. นำเข้า Component โปรไฟล์
 
-// 1. สร้าง Data Structure แบบ "ตามหาตัวแม่" (ไม่ต้องพิมพ์คำซ้ำๆ)
+// สร้าง Data Structure แบบ "ตามหาตัวแม่" (ไม่ต้องพิมพ์คำซ้ำๆ)
 const routeConfig = {
   '/': { name: 'หมวดหมู่', parent: null },
   
@@ -22,8 +23,11 @@ const routeConfig = {
 
 function Header() {
   const location = useLocation();
+  
+  // 👉 3. สร้าง State สำหรับเปิด/ปิด Profile Dropdown
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  // 2. ฟังก์ชันต่อข้อความอัตโนมัติ (ย้อนกลับไปหาตัวแม่เรื่อยๆ)
+  // ฟังก์ชันต่อข้อความอัตโนมัติ (ย้อนกลับไปหาตัวแม่เรื่อยๆ)
   const getBreadcrumbText = (pathname) => {
     let currentPath = routeConfig[pathname];
 
@@ -50,17 +54,25 @@ function Header() {
       
       <div className="header-left">
         <span className="header-text" style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>
-          {/* 3. เรียกใช้ฟังก์ชันตรงนี้ */}
           {getBreadcrumbText(location.pathname)}
         </span>
       </div>
 
-      <div className="header-right">
+      {/* 👉 4. เพิ่ม position: 'relative' เพื่อให้ Dropdown เกาะติดมุมนี้พอดี */}
+      <div className="header-right" style={{ position: 'relative' }}>
         <i className="fa-regular fa-bell bell-icon"></i>
         <span className="header-text">{displayID}</span>
-        <div className="user-avatar">
+        
+        {/* 👉 5. เพิ่ม onClick ให้ไอคอน เพื่อสลับสวิตช์เปิด/ปิดกล่องโปรไฟล์ */}
+        <div 
+          className="user-avatar" 
+          onClick={() => setIsProfileOpen(!isProfileOpen)}
+        >
           <i className="fa-solid fa-user"></i>
         </div>
+
+        {/* 👉 6. ถ้า isProfileOpen เป็น true ให้โชว์กล่อง Profile */}
+        {isProfileOpen && <UserProfileDropdown />}
       </div>
 
     </header>
