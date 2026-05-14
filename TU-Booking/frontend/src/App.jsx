@@ -15,6 +15,7 @@ import Study from './components/Study';
 import StudyBooking from './components/StudyBooking';
 import KromLuangBooking from './components/KromLuangBooking';
 import Rewards from './components/Rewards';
+import MyBooking from './components/MyBooking'; // 👉 1. Import หน้า MyBooking เข้ามา
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -92,9 +93,9 @@ function App() {
 
             {/* --- เมนูจากแถบ Navbar --- */}
             <Route path="/news" element={<Attention />} />
-            <Route path="/my-booking" element={
-              <div style={{ padding: '20px' }}><h2>การจองของฉัน (รอระบบ Database)</h2></div>
-            } />
+            
+            {/* 👉 2. อัปเดต Route การจองของฉันให้เรียกใช้ MyBooking Component */}
+            <Route path="/my-booking" element={<MyBooking />} />
 
             <Route path="/rewards" element={
               <Rewards points={userPoints} setPoints={setUserPoints} />
