@@ -1,0 +1,1236 @@
+/* --- Global Layout --- */
+/* --- Global Layout --- */
+.App {
+  display: flex;
+  width: 100%; /* กางเต็ม #root */
+  min-height: 100vh;
+  background-color: #F8F9FA;
+}
+
+/* ส่วนเนื้อหาฝั่งขวาที่เหลือจาก Navbar */
+.main-wrapper {
+  flex: 1; /* 👈 คำสั่งนี้จะสั่งให้กล่องขยายเต็มพื้นที่ที่เหลือฝั่งขวาทั้งหมดอัตโนมัติ */
+  margin-left: 15rem; /* ดันหลบ Navbar (ปรับเลขให้ตรงกับความกว้าง Navbar ของคุณ) */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- Navbar Styles --- */
+.navbar-container {
+  width: 15rem;
+  height: 100vh;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 0;
+  border-right: 0.0625rem solid #EEEEEE; 
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+.logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding: 0 1.25rem;
+}
+
+.logo-circle {
+  width: 3.75rem;
+  height: 3.75rem;
+  border-radius: 50%;
+  background-color: #D1E4FF;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.625rem;
+}
+
+.logo-text {
+  font-weight: bold;
+  color: #0056D2;
+  font-size: 1.25rem;
+  text-align: center;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+  font-weight: bold;
+}
+
+.menu-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem; 
+  padding: 0 0.9375rem; 
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 0.9375rem; 
+  border-radius: 0.625rem; 
+  color: #666;
+  cursor: pointer;
+  font-size: 1.3rem; 
+  transition: 0.3s;
+}
+
+.menu-item:hover {
+  background-color: #F8F9FA;
+  color: #CC0000;
+}
+
+.menu-item.active {
+  background-color: #FFF5F5;
+  color: #CC0000;
+  font-weight: bold;
+}
+
+.menu-item.active i {
+  color: #CC0000;
+}
+
+.menu-item i {
+  width: 1.5625rem; 
+  margin-right: 0.75rem; 
+}
+
+.logout-section {
+  padding: 0 0.9375rem;
+  margin-top: auto;
+  border-top: 0.0625rem solid #F5F5F5;
+  padding-top: 1.25rem;
+}
+
+/* --- Header Styles --- */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4.375rem; 
+  padding: 0 1.875rem;
+  background-color: #FFFFFF;
+  border-bottom: 0.0625rem solid #EEEEEE;
+}
+
+.header-left, .header-right {
+  display: flex;
+  align-items: center;
+}
+
+.header-right {
+  gap: 1.25rem;
+}
+
+.header-text {
+  color: #333333;
+  font-size: 1.3rem;
+  font-weight: 500;
+}
+
+.bell-icon {
+  font-size: 1.25rem;
+  color: #666666;
+  cursor: pointer;
+}
+
+.user-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 2.8125rem;
+  height: 2.8125rem;
+  border-radius: 50%;
+  background-color: #E6E0F8;
+  cursor: pointer;
+}
+
+.user-avatar i {
+  font-size: 1.375rem;
+  color: #8A6FF7;
+}
+
+/* --- Home Styles --- */
+.home-container {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 3rem;
+  width: 100%;
+}
+
+.select-title {
+  font-family: 'Itim', cursive; 
+  font-size: 2rem; 
+  color: #4A4A4A; 
+  font-weight: 400; 
+  margin-top: 2.5rem;
+  margin-bottom: 3.125rem;
+  text-align: center;
+  text-shadow: 0.0625rem 0.0625rem 0.125rem rgba(0,0,0,0.05); 
+}
+
+.card-grid {
+  display: flex;
+  gap: 4rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 9rem;
+}
+
+.category-card {
+  width: 17.5rem;
+  height: 12.5rem; 
+  border-radius: 3.75rem; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0.25rem 0.9375rem rgba(0,0,0,0.1);
+}
+
+.category-card:hover {
+  transform: translateY(-0.5rem); 
+  box-shadow: 0 0.5rem 1.5625rem rgba(0,0,0,0.15);
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  gap: 0.9375rem; 
+  color: white;
+  font-weight: bold;
+  padding: 0 1.25rem;
+  text-align: left;
+}
+
+.card-content i {
+  font-size: 2.8125rem; 
+}
+
+.sport-card { background-color: #2D9CDB; }
+.karaoke-card { background-color: #C08CFE; }
+.study-card { background-color: #B92D33; }
+
+.karaoke-card span,
+.study-card span,
+.sport-card span{
+  font-size: 1.3rem; 
+  line-height: 1.2;
+  font-family: 'Itim', cursive; 
+}
+
+.sport-selection-container {
+  min-height: 100vh;
+  background-color: #EEF0F8;
+  padding: 2rem;
+}
+
+.sport-card-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.sport-item-card {
+  width: 20rem;
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+  transition: 0.3s;
+  cursor: pointer;
+  text-align: center;
+}
+
+.sport-item-card:hover {
+  transform: translateY(-0.5rem);
+}
+
+.sport-img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.sport-name {
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.breadcrumb {
+  font-family: 'Itim', cursive;
+  font-size: 1.1rem;
+}
+
+/* --- Booking Page Styles --- */
+.booking-page-container {
+  padding: 2rem;
+  position: relative;
+}
+
+.date-display-section {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.date-box {
+  text-align: right;
+}
+
+.date-badge {
+  background: white;
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0,0,0,0.05);
+  font-weight: bold;
+}
+
+.court-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.court-booking-card {
+  background: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+}
+
+.court-title {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.court-details {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.court-thumbnail {
+  width: 15rem;
+  height: 9rem;
+  border-radius: 1rem;
+  object-fit: cover;
+}
+
+.court-info h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.125rem;
+}
+
+.court-info p {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.time-slots {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.time-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.time-btn.available {
+  background-color: #48BB78; 
+}
+
+.time-btn.available:hover {
+  background-color: #38A169;
+  transform: translateY(-0.125rem);
+}
+
+.time-btn.unavailable {
+  background-color: #FC8181; 
+  cursor: not-allowed;
+}
+
+/* --- Modal (Popup) Styles --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 1.5rem;
+  width: 90%;
+  max-width: 40rem;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 1rem 3rem rgba(0,0,0,0.2);
+  animation: popIn 0.3s ease-out forwards;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-title {
+  margin-top: 0;
+  font-family: 'Itim', cursive;
+  font-size: 1.75rem;
+}
+
+.modal-icon {
+  margin: 1.5rem 0;
+}
+
+.warning-text {
+  font-size: 0.875rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.btn-confirm {
+  background-color: #48BB78;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #ECC94B;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* --- Attention Styles --- */
+.attention-container {
+  padding: 2rem;
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.attention-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.attention-white-board {
+  background-color: #FFFFFF;
+  border-radius: 1.5rem;
+  padding: 2rem;
+  box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.alert-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-radius: 0.75rem;
+  border-width: 0.0625rem;
+  border-style: dashed; /* เส้นประตามรูป */
+}
+
+.alert-icon {
+  font-size: 1.5rem;
+  margin-top: 0.2rem;
+}
+
+.alert-content strong {
+  display: block;
+  font-size: 1.3rem;
+  margin-bottom: 0.25rem;
+}
+
+.alert-content p {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+/* สีแต่ละประเภท */
+.alert-card.success {
+  background-color: #EFFFF4;
+  border-color: #6FCF97;
+  color: #219653;
+}
+
+.alert-card.info {
+  background-color: #F0F7FF;
+  border-color: #2D9CDB;
+  color: #2D9CDB;
+}
+
+.alert-card.error {
+  background-color: #FFF0F0;
+  border-color: #EB5757;
+  color: #EB5757;
+}
+
+/* --- Login Page Styles --- */
+.login-page {
+  width: 100vw;
+  height: 100vh;
+  background-color: #0A1B3F; /* สีพื้นหลังน้ำเงินเข้มตามรูป */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'system-ui', -apple-system, sans-serif;
+}
+
+.login-card {
+  background-color: #FFFFFF;
+  width: 22.5rem; /* ประมาณ 360px */
+  padding: 2.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+}
+
+.login-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+/* โลโก้จำลอง (สีส้ม) */
+.login-logo-placeholder {
+  width: 3rem;
+  height: 3rem;
+  background-color: #E27D2C; 
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.login-brand {
+  color: #7A1D1D; /* สีแดงเข้มมธ. */
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.25rem;
+}
+
+.input-group label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 0.5rem;
+}
+
+.input-group input {
+  background-color: #F0F4F8; /* สีพื้นหลังกล่องข้อความ */
+  border: none;
+  padding: 0.875rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  color: #333;
+  outline: none;
+}
+
+.input-group input::placeholder {
+  color: #A0AAB5;
+}
+
+.input-group input:focus {
+  background-color: #E6EDF5;
+  box-shadow: 0 0 0 0.125rem #63B3ED;
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  font-size: 0.8125rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.forgot-password {
+  color: #4299E1;
+  text-decoration: none;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.login-button {
+  width: 100%;
+  background-color: #63B3ED; /* สีฟ้าอ่อนตามรูป */
+  color: #FFFFFF;
+  border: none;
+  padding: 0.875rem;
+  border-radius: 0.375rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0.25rem 0.5rem rgba(99, 179, 237, 0.4); /* เงาปุ่มสีฟ้า */
+  transition: background-color 0.2s;
+}
+
+.login-button:hover {
+  background-color: #4299E1;
+}
+
+/* --- Karaoke Page Styles --- */
+.karaoke-selection-container {
+  background-color: #EEF0F8;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+/* จัด Grid ให้อยู่กึ่งกลางแนวนอน และมีระยะห่างจากปุ่มย้อนกลับที่พอดี */
+.karaoke-card-grid {
+ display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.karaoke-item-card {
+  width: 20rem;
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+  transition: 0.3s;
+  cursor: pointer;
+  text-align: center;
+}
+
+.karaoke-item-card:hover {
+  transform: translateY(-0.5rem);
+}
+
+.karaoke-img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.karaoke-name {
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.breadcrumb {
+  font-family: 'Itim', cursive;
+  font-size: 1.1rem;
+}
+
+/* --- Study Page Styles --- */
+.study-selection-container {
+  background-color: #EEF0F8;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.study-card-grid {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 2rem;
+}
+
+.study-item-card {
+  width: 20rem;
+  background: white;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 0.5rem 1.5rem rgba(0,0,0,0.1);
+  transition: 0.3s;
+  cursor: pointer;
+  text-align: center;
+}
+
+.study-item-card:hover {
+  transform: translateY(-0.5rem);
+}
+
+.study-img {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.study-name {
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+  font-family: 'Itim', cursive;
+}
+
+/* --- Profile Dropdown Popup (ปรับปรุงให้สวยขึ้น) --- */
+.profile-dropdown-container {
+  position: absolute; /* ทำให้มันลอย ไม่ไปดัน Header */
+  top: 100%; /* เลื่อนลงมาอยู่ใต้ Header พอดี */
+  right: 0; /* ชิดขวาเป๊ะๆ */
+  margin-top: 1rem; /* ห่างจาก Header นิดหน่อย */
+  width: 20rem; /* ขนาดกำลังดี */
+  background-color: #FFFFFF;
+  border-radius: 1rem; /* ขอบมนสวยๆ */
+  
+  /* หัวใจสำคัญ: เพิ่มเงา (Box Shadow) ให้ดูลอยและมีมิติ */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+  border: 1px solid #EBEBEB; /* เส้นขอบบางๆ ให้ดูเนี๊ยบ */
+  
+  padding: 1.5rem;
+  z-index: 1000; /* บังคับให้ลอยอยู่เหนือของทุกอย่างในหน้าเว็บ */
+}
+
+/* ทำให้รูปโปรไฟล์วงกลมด้านในดูพรีเมียมขึ้น */
+.profile-large-avatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background-color: #F0F4FF; /* สีฟ้าอ่อนๆ สบายตา */
+  color: #0056D2; /* สีไอคอนสีน้ำเงินเข้ม */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2.2rem;
+  margin: 0 auto 1.2rem auto;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05); /* เงานิดๆ ด้านในวงกลม */
+}
+
+.profile-info-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #555555; /* ลดความเข้มของสีตัวหนังสือลงนิดนึงให้ดูคลีน */
+}
+
+.status-badge {
+  background-color: #E6F4EA;
+  color: #1E8E3E;
+  padding: 0.2rem 0.8rem;
+  border-radius: 1rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.profile-divider {
+  height: 1px;
+  background-color: #EFEFEF;
+  margin: 1.2rem 0;
+}
+
+.warning-section {
+  text-align: center;
+}
+
+.warning-title {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #555555;
+  margin-bottom: 0.8rem;
+}
+
+.warning-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.warning-dots .dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* เพิ่มความมีมิติให้จุดเขียว */
+}
+
+.warning-dots .dot.green {
+  background-color: #5BB974;
+}
+
+.warning-desc {
+  font-size: 0.75rem;
+  color: #999999;
+}
+
+/* --- Rewards Page (หน้าแลกของรางวัล) --- */
+.rewards-container {
+  padding: 2rem 3rem;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.rewards-title {
+  font-size: 2rem;
+  color: #333333;
+  margin-bottom: 0.5rem;
+}
+
+.rewards-subtitle {
+  color: #666666;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.points-highlight {
+  color: #E31B23;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.rewards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: flex-start;
+  margin-top: 0;
+}
+
+/* การ์ดของรางวัล */
+.reward-card {
+  width: 18rem;
+  text-align: center;
+  padding: 2rem 1rem;
+  background-color: #FFFFFF;
+  border-radius: 1.2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reward-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.reward-icon-wrapper {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.reward-name {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #333333;
+}
+
+.reward-category {
+  font-size: 0.9rem;
+  color: #999999;
+  margin-bottom: 1.5rem;
+}
+
+/* ปุ่มกดแลกรางวัล */
+.btn-redeem {
+  background-color: #E31B23;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.btn-redeem:hover:not(:disabled) {
+  background-color: #C8151D; /* สีแดงเข้มขึ้นตอนโฮเวอร์ */
+}
+
+.btn-redeem:disabled {
+  background-color: #CCCCCC;
+  cursor: not-allowed;
+}
+
+.reward-error-text {
+  font-size: 0.8rem;
+  color: #E31B23;
+  margin-top: 0.5rem;
+  display: block;
+}
+
+/* กล่องสรุปคะแนนใน Popup */
+.modal-summary-box {
+  background-color: #F8F9FA;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.summary-row.deduct {
+  color: #E31B23;
+}
+
+.summary-row.balance {
+  color: #1E8E3E;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+.summary-divider {
+  height: 1px;
+  background-color: #DDDDDD;
+  margin: 0.8rem 0;
+}
+
+/* --- My Booking & Rewards History --- */
+.my-booking-container {
+  padding: 2rem 3rem;
+  width: 100%;
+  min-height: 100vh;
+  flex: 1;
+  background-color: #EEF0F8;
+}
+
+/* ตัวสลับ Tab */
+.tab-switcher {
+  display: flex;
+  background-color: #E0E4F0;
+  padding: 0.4rem;
+  border-radius: 2rem;
+  width: fit-content;
+  margin-bottom: 2rem;
+}
+
+.tab-btn {
+  padding: 0.6rem 2rem;
+  border: none;
+  background: none;
+  border-radius: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.3s;
+}
+
+.tab-btn.active {
+  background-color: #FFFFFF;
+  color: #E31B23;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* การ์ดรายการจอง */
+.booking-card {
+  background: white;
+  padding: 1.2rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: #F0F4FF;
+  border-radius: 0.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #4A90E2;
+}
+
+.card-details h3 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+.card-details p { font-size: 0.9rem; color: #777; margin: 0.1rem 0; }
+
+.card-status {
+  margin-left: auto;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+.card-status.upcoming { background-color: #E6F4EA; color: #1E8E3E; }
+.card-status.completed { background-color: #F1F3F4; color: #5F6368; }
+
+/* การ์ดของรางวัลสำหรับโชว์พนักงาน */
+.reward-claim-card {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  border-left: 5px solid #E31B23;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.reward-claim-header {
+  padding: 1rem;
+  background-color: #FFF5F5;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: bold;
+  color: #E31B23;
+}
+
+.reward-claim-body {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.ref-label { font-size: 0.85rem; color: #888; margin-bottom: 0.5rem; }
+.ref-code { 
+  font-size: 2rem; 
+  letter-spacing: 0.3rem; 
+  color: #333; 
+  margin-bottom: 1rem;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.claim-info {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  font-size: 0.85rem;
+  color: #999;
+}
+
+.claim-status-badge {
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+.claim-status-badge.ready { background-color: #1E8E3E; color: white; }
+.claim-status-badge.used { background-color: #DDD; color: #777; }
+
+/* --- My Booking Table Layout --- */
+.booking-table-container {
+  background-color: #FFFFFF;
+  border-radius: 1rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  font-size: 0.95rem;
+}
+
+.booking-table-header {
+  display: flex;
+  background-color: #F8F9FA;
+  padding: 1.2rem 1rem;
+  font-weight: bold;
+  color: #333;
+  border-bottom: 2px solid #EEEEEE;
+}
+
+.booking-table-row {
+  display: flex;
+  align-items: center;
+  padding: 1.2rem 1rem;
+  border-bottom: 1px dashed #EEEEEE;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.booking-table-row:hover {
+  background-color: #F4F6FF; /* ไฮไลท์เมื่อเอาเมาส์ชี้เพื่อบอกว่าคลิกได้ */
+}
+
+/* ปุ่มรายงาน */
+.report-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: white;
+}
+.report-btn.active {
+  background-color: #FF5A5F;
+  cursor: pointer;
+}
+.report-btn.active:hover {
+  background-color: #E31B23;
+}
+.report-btn.disabled {
+  background-color: #DDDDDD;
+  color: #999999;
+  cursor: not-allowed;
+}
+
+/* Badge สถานะ */
+.status-badge {
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  color: #333;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+/* กล่องข้อความสำหรับพิมพ์แจ้งซ่อม */
+.report-textarea {
+  width: 100%;
+  height: 120px;
+  padding: 1rem;
+  border: 1px solid #CCC;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-family: inherit;
+  resize: vertical; /* ยืดหดความสูงได้ */
+}
+.report-textarea:focus {
+  outline: none;
+  border-color: #E31B23;
+  box-shadow: 0 0 0 3px rgba(227, 27, 35, 0.1);
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* ปุ่มยกเลิกการจอง */
+.cancel-booking-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #E31B23;
+  background-color: white;
+  color: #E31B23;
+  border-radius: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-booking-btn:hover {
+  background-color: #FFF5F5;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* ปุ่มเลื่อนเวลา / เปลี่ยนเวลา */
+.modify-booking-btn {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #F5A623;
+  background-color: white;
+  color: #F5A623;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modify-booking-btn:hover:not(.disabled) {
+  background-color: #FFF9F0;
+}
+
+/* ปุ่มยกเลิกการจอง */
+.cancel-booking-btn {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #E31B23;
+  background-color: white;
+  color: #E31B23;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-booking-btn:hover:not(.disabled) {
+  background-color: #FFF5F5;
+}
+
+/* สไตล์เมื่อปุ่มถูกปิดการใช้งาน (เหลือน้อยกว่า 2 ชั่วโมง) */
+.modify-booking-btn.disabled,
+.cancel-booking-btn.disabled {
+  border-color: #DDDDDD;
+  color: #AAAAAA;
+  cursor: not-allowed;
+  background-color: #F9F9F9;
+}
