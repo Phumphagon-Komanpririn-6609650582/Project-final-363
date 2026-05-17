@@ -6,6 +6,8 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import SportSelection from './components/Sport';
 import TennisCourt from './components/TennisCourt';
+import BadmintonCourtInterzone from './components/BadmintonCourtInterzone';
+import BadmintonCourtGym4 from './components/BadmintonCourtGym4';
 import Attention from './components/Attention';
 import Login from './components/Login';
 import Karaoke from './components/Karaoke';
@@ -44,10 +46,14 @@ function App() {
                 onBack={() => navigate('/')} 
                 onSelectCourt={(courtType) => {
                   if (courtType === 'Tennis Court') navigate('/tennis_court');
+                  if (courtType === 'Badminton Court Inrerzone') navigate('/badminton_court_inrerzone');
+                  if (courtType === 'Badminton Court Gym 4') navigate('/badminton_court_gym_4');
                 }}
               />
             } />
             <Route path="/tennis_court" element={<TennisCourt onBack={() => navigate('/sport')} />} />
+            <Route path="/badminton_court_inrerzone" element={<BadmintonCourtInterzone onBack={() => navigate('/sport')} />} />
+            <Route path="/badminton_court_gym_4" element={<BadmintonCourtGym4 onBack={() => navigate('/sport')} />} />
           
             {/* --- หมวดหมู่คาราโอเกะ & ดนตรี --- */}
             <Route path="/karaoke" element={

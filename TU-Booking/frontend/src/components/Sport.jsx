@@ -1,10 +1,13 @@
 import React from 'react';
+import TennisImg from '../assets/TennisCourt.png';
+import BadmintonInterzoneImg from '../assets/BadmintonInterzone.png';
+import BadmintongymImg from '../assets/BadmintonGym4.png';
 
 function Sport({ onBack, onSelectCourt }) {
   const sports = [
-    { id: 1, name: 'Tennis Court', img: 'https://psm.tu.ac.th/wp-content/uploads/2023/08/%E0%B9%80%E0%B8%97%E0%B8%99%E0%B8%99%E0%B8%B4%E0%B8%AA%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%81%E0%B8%AD%E0%B8%9A1-scaled.jpg' },
-    { id: 2, name: 'Badminton Court', img: 'https://psm.tu.ac.th/wp-content/uploads/2023/08/%E0%B8%AA%E0%B8%99%E0%B8%B2%E0%B8%A1%E0%B9%81%E0%B8%9A%E0%B8%94%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%81%E0%B8%AD%E0%B8%9A1-scaled.jpg' },
-    { id: 3, name: 'TUFitness', img: 'https://psm.tu.ac.th/wp-content/uploads/2023/08/%E0%B8%AB%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%9F%E0%B8%B4%E0%B8%95%E0%B9%80%E0%B8%99%E0%B8%AA%E0%B8%9B%E0%B8%81-scaled.jpg' }
+    { id: 1, name: 'Tennis Court', img: TennisImg },
+    { id: 2, name: 'Badminton Court Inrerzone', img: BadmintonInterzoneImg },
+    { id: 3, name: 'Badminton Court Gym 4', img: BadmintongymImg }
   ];
 
   return (

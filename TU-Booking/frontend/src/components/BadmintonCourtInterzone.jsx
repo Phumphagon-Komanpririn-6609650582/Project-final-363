@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import BookingDateSelector from './BookingDateSelector';
-import TennisImg from '../assets/TennisCourt.png';
+import BadmintonInterzoneImg from '../assets/BadmintonInterzone.png';
 
 const initialCourtData = [
   {
     id: '02',
-    title: 'Tennis Court',
-    name: 'Tennis Court 02',
+    title: 'Badminton Court Interzone',
+    name: 'Badminton Court 02',
     desc: '',
-    img: TennisImg,
+    img: BadmintonInterzoneImg,
     slots: [
       { time: '16:00', isAvailable: true },
       { time: '17:00', isAvailable: true },
@@ -19,10 +19,10 @@ const initialCourtData = [
   },
   {
     id: '03',
-    title: 'Tennis Court',
-    name: 'Tennis Court 03',
+    title: 'Badminton Court Interzone',
+    name: 'Badminton Court 03',
     desc: '',
-    img: TennisImg,
+    img: BadmintonInterzoneImg,
     slots: [
       { time: '16:00', isAvailable: true },
       { time: '17:00', isAvailable: true },
@@ -33,10 +33,10 @@ const initialCourtData = [
   },
   {
     id: '04',
-    title: 'Tennis Court',
-    name: 'Tennis Court 04',
+    title: 'Badminton Court Interzone',
+    name: 'Badminton Court 04',
     desc: '',
-    img: TennisImg,
+    img: BadmintonInterzoneImg,
     slots: [
       { time: '16:00', isAvailable: true },
       { time: '17:00', isAvailable: true },
@@ -47,10 +47,10 @@ const initialCourtData = [
   },
   {
     id: '05',
-    title: 'Tennis Court',
-    name: 'Tennis Court 05',
+    title: 'Badminton Court Interzone',
+    name: 'Badminton Court 05',
     desc: '',
-    img: TennisImg,
+    img: BadmintonInterzoneImg,
     slots: [
       { time: '16:00', isAvailable: true },
       { time: '17:00', isAvailable: true },
@@ -61,10 +61,10 @@ const initialCourtData = [
   },
   {
     id: '07',
-    title: 'Tennis Court',
-    name: 'Tennis Court 07',
+    title: 'Badminton Court Interzone',
+    name: 'Badminton Court 07',
     desc: '',
-    img: TennisImg,
+    img: BadmintonInterzoneImg,
     slots: [
       { time: '16:00', isAvailable: true },
       { time: '17:00', isAvailable: true },
@@ -72,17 +72,17 @@ const initialCourtData = [
   },
   {
     id: '08',
-    title: 'Tennis Court',
-    name: 'Tennis Court 08',
+    title: 'Badminton Court Interzone',
+    name: 'Badminton Court 08',
     desc: '',
-    img: TennisImg,
+    img: BadmintonInterzoneImg,
     slots: [
       { time: '20:00', isAvailable: false },
     ]
   },
 ];
 
-function TennisCourt({ onBack }) {
+function BadmintonInterzone({ onBack }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
@@ -202,4 +202,4 @@ function TennisCourt({ onBack }) {
   );
 }
 
-export default TennisCourt;
+export default BadmintonInterzone;
