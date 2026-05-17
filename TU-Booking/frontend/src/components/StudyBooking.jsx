@@ -1,163 +1,61 @@
-import React, { useState } from 'react';
-import studyRoomImg from '../assets/Study Room Category.png';
+import React, { useState, useEffect } from 'react';
 import BookingDateSelector from './BookingDateSelector';
-
-const initialStudyData = [
-  {
-    id: 'SR1',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 1',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR2',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 2',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR3',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 3',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR4',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 4',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR5',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 5',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR6',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 6',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR7',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 7',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR8',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 8',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR9',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 9',
-    desc: '', // ในรูปไม่มีคำอธิบายราคา/จำนวนคน เลยเว้นว่างไว้ครับ
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: true }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  },
-  {
-    id: 'SR10',
-    title: 'Puey Ungphakorn Library',
-    name: 'Study Room 10',
-    desc: '',
-    img: studyRoomImg,
-    slots: [
-      { time: '09:00-12:00', isAvailable: false }, 
-      { time: '12:00-15:00', isAvailable: false },
-      { time: '15:00-18:00', isAvailable: false }, 
-      { time: '18:00-21:00', isAvailable: false },
-      { time: '21:00-23:59', isAvailable: true }
-    ]
-  }
-];
+// ❌ ลบ import studyRoomImg ออก เพราะเราดึงรูปจากฐานข้อมูลเรียบร้อยแล้ว
 
 function StudyBooking({ onBack }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [rooms, setRooms] = useState(initialStudyData);
 
-  // 👉 สร้าง State สำหรับวันที่ที่เลือก (เริ่มต้นเป็นวันที่วันนี้)
+  // 👉 1. State สำหรับเก็บข้อมูลห้องสมุดที่ดึงมาจาก DB จริง
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // สร้าง State สำหรับวันที่ที่เลือก (เริ่มต้นเป็นวันที่ปัจจุบัน)
   const [selectedDate, setSelectedDate] = useState(
     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
+  // 👉 2. ยิง API ไปกวาดห้องสมุดป๋วยทั้งหมดมาจาก MongoDB
+  useEffect(() => {
+    const fetchPueyLibraryRooms = async () => {
+      try {
+        setLoading(true);
+        // ขอข้อมูลทั้งหมดในหมวด Study
+        const response = await fetch('http://localhost:4000/api/facilities?type=Study');
+        const data = await response.json();
+
+        // ⚠️ กรองเอาเฉพาะห้องของหอสมุดป๋วยฯ (Puey Ungphakorn Library)
+        const pueyRooms = data.filter(item => item.name === 'Puey Ungphakorn Library');
+
+        // ฟอร์แมตโครงสร้าง Object ให้เข้าลูปแสดงผลเหมือนเดิม
+        const formattedRooms = pueyRooms.map(room => ({
+          id: room._id,
+          title: room.name,
+          name: room.room, // ชื่อห้องย่อย เช่น Study Room 1
+          desc: room.desc,
+          img: room.img,
+          // แปลงอาร์เรย์สล็อตเวลาจาก DB (['09:00-12:00', ...]) มาสร้างปุ่มกด
+          slots: room.slots.map(timeStr => ({
+            time: timeStr,
+            isAvailable: true // ให้ปุ่มว่างกดได้ไปก่อน เดี๋ยวสเต็ปถัดๆ ไปค่อยไปเชื่อมประวัติการจองจริงมาตัดคิว
+          }))
+        }));
+
+        setRooms(formattedRooms);
+        setLoading(false);
+      } catch (error) {
+        console.error('❌ ดึงข้อมูลห้องสมุดป๋วยฯ ล้มเหลว:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchPueyLibraryRooms();
+  }, [selectedDate]);
+
+  // --------------------------------------------------------
+
   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
     if (isAvailable) {
-      // ✅ แก้ไข: ใช้ selectedDate จาก State ตรงๆ ข้อมูลใน Popup จะได้ตรงกับวันที่เลือก
       setSelectedBooking({ roomId, roomName, time, date: selectedDate });
       setIsModalOpen(true);
     }
@@ -165,6 +63,7 @@ function StudyBooking({ onBack }) {
 
   const confirmBooking = () => {
     const { roomId, time } = selectedBooking;
+    
     const updatedRooms = rooms.map(room => {
       if (room.id === roomId) {
         return {
@@ -181,8 +80,10 @@ function StudyBooking({ onBack }) {
     setRooms(updatedRooms);
     setIsModalOpen(false);
     setSelectedBooking(null);
-    alert('จองห้องเรียนสำเร็จ!');
+    alert('จองห้องเรียนสำเร็จ! (จำลองการกดจอง)');
   };
+
+  // --------------------------------------------------------
 
   return (
     <div className="booking-page-container" style={{ backgroundColor: '#EEF0F8' }}>
@@ -191,41 +92,46 @@ function StudyBooking({ onBack }) {
       </div>
 
       <div className="date-display-section" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
-         {/* 👉 เรียกใช้ Component เลือกวันที่ตรงนี้ */}
          <BookingDateSelector 
             selectedDate={selectedDate} 
             onDateChange={(newDate) => setSelectedDate(newDate)} 
          />
       </div>
 
-      <div className="court-list">
-        {rooms.map((room) => (
-          <div key={room.id} className="court-booking-card">
-            <h3 className="court-title">{room.title}</h3>
-            <div className="court-details">
-              <img src={room.img} alt={room.name} className="court-thumbnail" />
-              <div className="court-info">
-                <h4>{room.name}</h4>
-                {/* ถ้ามี desc ค่อยแสดง ถ้าไม่มีก็ไม่กินพื้นที่ */}
-                {room.desc && <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{room.desc}</p>}
-                <p>ช่วงเวลาที่สามารถจองได้ :</p>
-                <div className="time-slots">
-                  {room.slots.map((slot, index) => (
-                    <button 
-                      key={index} 
-                      className={`time-btn ${slot.isAvailable ? 'available' : 'unavailable'}`}
-                      onClick={() => handleSlotClick(room.id, room.name, slot.time, slot.isAvailable)}
-                    >
-                      {/* แอบใส่ไอคอนนาฬิกาหรือปฏิทินนิดนึงให้เหมือนในรูป หรือโชว์แค่เวลาก็ได้ */}
-                      {slot.time}
-                    </button>
-                  ))}
+      {/* 👉 โชว์หมุนติ้วๆ ระหว่างรอข้อมูลจากเซิร์ฟเวอร์หลังบ้าน */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}></i>
+          <p>กำลังโหลดคิว Study Room หอสมุดป๋วยฯ...</p>
+        </div>
+      ) : (
+        <div className="court-list">
+          {rooms.map((room) => (
+            <div key={room.id} className="court-booking-card">
+              <h3 className="court-title">{room.title}</h3>
+              <div className="court-details">
+                <img src={room.img} alt={room.name} className="court-thumbnail" />
+                <div className="court-info">
+                  <h4>{room.name}</h4>
+                  {room.desc && <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{room.desc}</p>}
+                  <p>ช่วงเวลาที่สามารถจองได้ :</p>
+                  <div className="time-slots">
+                    {room.slots.map((slot, index) => (
+                      <button 
+                        key={index} 
+                        className={`time-btn ${slot.isAvailable ? 'available' : 'unavailable'}`}
+                        onClick={() => handleSlotClick(room.id, room.name, slot.time, slot.isAvailable)}
+                      >
+                        {slot.time}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* --- Popup (Modal) --- */}
       {isModalOpen && (
@@ -241,7 +147,7 @@ function StudyBooking({ onBack }) {
             <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
               วันที่ : {selectedBooking?.date} เวลา : {selectedBooking?.time} น.
             </p>
-            <p style={{ color: '#666', marginBottom: '1.5rem' }}>หมวดหมู่: ห้องเรียน</p>
+            <p style={{ color: '#666', marginBottom: '1.5rem' }}>หมวดหมู่: ห้องเรียน (หอสมุดป๋วยฯ)</p>
             
             <p className="warning-text">
               กรุณาดำเนินการเช็คอินที่หน้า Counter ก่อนเวลา 15 นาที<br/>

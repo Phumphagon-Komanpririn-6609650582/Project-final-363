@@ -1,6 +1,6 @@
 import React from 'react';
-import KaraokeImg from '../assets/Karaoke Banner.png'
-import MusicImg from '../assets/MusicRoom Banner.png'
+import KaraokeImg from '/assets/Karaoke Banner.png'
+import MusicImg from '/assets/MusicRoom Banner.png'
 function Karaoke({ onBack, onSelectRoom }) {
   const karaokeRooms = [
     { 

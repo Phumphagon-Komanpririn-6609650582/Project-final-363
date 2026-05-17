@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // ⚠️ อย่าลืม Import รูปภาพจากโฟลเดอร์ assets
-import pueyImg from '../assets/puey_library.png'; 
-import kromLuangImg from '../assets/krom_luang.png'; 
+import pueyImg from '/assets/puey_library.png'; 
+import kromLuangImg from '/assets/krom_luang.png'; 
 
 function Study({ onBack, onSelectRoom }) {
   const navigate = useNavigate();

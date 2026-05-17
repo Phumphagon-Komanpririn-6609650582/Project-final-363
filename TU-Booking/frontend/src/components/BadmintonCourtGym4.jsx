@@ -1,88 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import BookingDateSelector from './BookingDateSelector';
-import BadmintongymImg from '../assets/BadmintonGym4.png';
-
-const initialCourtData = [
-  {
-    id: '02',
-    title: 'Badminton Court Gym 4',
-    name: 'Badminton Court 02',
-    desc: '',
-    img: BadmintongymImg,
-    slots: [
-      { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: false },
-      { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: false },
-    ]
-  },
-  {
-    id: '04',
-    title: 'Badminton Court Gym 4',
-    name: 'Badminton Court 04',
-    desc: '',
-    img: BadmintongymImg,
-    slots: [
-      { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: false },
-      { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: false },
-    ]
-  },
-  {
-    id: '06',
-    title: 'Badminton Court Gym 4',
-    name: 'Badminton Court 06',
-    desc: '',
-    img: BadmintongymImg,
-    slots: [
-      { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: false },
-      { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: false },
-    ]
-  },
-  {
-    id: '07',
-    title: 'Badminton Court Gym 4',
-    name: 'Badminton Court 07',
-    desc: '',
-    img: BadmintongymImg,
-    slots: [
-      { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true },
-      { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: false },
-    ]
-  },
-  {
-    id: '08',
-    title: 'Badminton Court Gym 4',
-    name: 'Badminton Court 08',
-    desc: '',
-    img: BadmintongymImg,
-    slots: [
-      { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true },
-      { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: false },
-    ]
-  },
-];
+// ❌ ลบ import รูปออก เพราะเราจะดึงลิงก์รูปจากฐานข้อมูล
 
 function BadmintonGym4({ onBack }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  const [courts, setCourts] = useState(initialCourtData);
+  // 👉 1. State สำหรับเก็บข้อมูลคอร์ตที่ดึงมาจาก DB
+  const [courts, setCourts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedDate, setSelectedDate] = useState(
      new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
+  // 👉 2. ยิง API ไปดึงข้อมูลคอร์ตจาก MongoDB
+  useEffect(() => {
+    const fetchBadmintonGym4 = async () => {
+      try {
+        setLoading(true);
+        // ขอข้อมูลทั้งหมดที่เป็นหมวด Sport
+        const response = await fetch('http://localhost:4000/api/facilities?type=Sport');
+        const data = await response.json();
+
+        // ⚠️ กรองเอาเฉพาะข้อมูลที่ชื่อห้องหลักคือ "Badminton Court Gym 4"
+        const gym4Data = data.filter(item => item.name === 'Badminton Court Gym 4');
+
+        // จัดรูปฟอร์แมตข้อมูลให้ตรงกับที่ UI มึงเขียนไว้
+        const formattedCourts = gym4Data.map(court => ({
+          id: court._id,
+          title: court.name,
+          name: court.room, // ชื่อคอร์ตย่อย เช่น Badminton Court 02
+          desc: court.desc,
+          img: court.img,
+          // แปลงอาร์เรย์สล็อตเวลาจาก DB ให้เป็น Object ที่มีสถานะปุ่ม
+          slots: court.slots.map(timeStr => ({
+            time: timeStr,
+            isAvailable: true // ตั้งค่าให้ว่างกดได้ไปก่อน (เดี๋ยวค่อยมาเชื่อม DB ใบจองทีหลัง)
+          }))
+        }));
+
+        setCourts(formattedCourts);
+        setLoading(false);
+      } catch (error) {
+        console.error('❌ ดึงข้อมูล Badminton Gym 4 ล้มเหลว:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchBadmintonGym4();
+  }, [selectedDate]);
+
+  // --------------------------------------------------------
+
   const handleSlotClick = (courtId, courtName, time, isAvailable) => {
     if (isAvailable) {
-      // ✅ แก้ไข: ใช้ selectedDate จาก State ตรงๆ ข้อมูลใน Popup จะได้ตรงกับวันที่เลือก
       setSelectedBooking({ courtId, courtName, time, date: selectedDate });
       setIsModalOpen(true);
     }
@@ -107,12 +79,12 @@ function BadmintonGym4({ onBack }) {
     });
 
     setCourts(updatedCourts);
-
     setIsModalOpen(false);
     setSelectedBooking(null);
-
-    alert('จองสำเร็จ!');
+    alert('จองสำเร็จ! (จำลองการกดจอง)');
   };
+
+  // --------------------------------------------------------
 
   return (
     <div className="booking-page-container" style={{ backgroundColor: '#EEF0F8' }}>
@@ -121,40 +93,46 @@ function BadmintonGym4({ onBack }) {
       </div>
 
       <div className="date-display-section" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
-         {/* 👉 เรียกใช้ Component เลือกวันที่ตรงนี้ */}
          <BookingDateSelector 
             selectedDate={selectedDate} 
             onDateChange={(newDate) => setSelectedDate(newDate)} 
          />
       </div>
 
-      <div className="court-list">
-        {courts.map((court) => (
-          <div key={court.id} className="court-booking-card">
-            <h3 className="court-title">{court.title}</h3>
-            <div className="court-details">
-              <img src={court.img} alt={court.name} className="court-thumbnail" />
-              <div className="court-info">
-                <h4>{court.name}</h4>
-                {/* ถ้ามี desc ค่อยแสดง ถ้าไม่มีก็ไม่กินพื้นที่ */}
-                {court.desc && <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{court.desc}</p>}
-                <p>ช่วงเวลาที่สามารถจองได้ :</p>
-                <div className="time-slots">
-                  {court.slots.map((slot, index) => (
-                    <button 
-                      key={index} 
-                      className={`time-btn ${slot.isAvailable ? 'available' : 'unavailable'}`}
-                      onClick={() => handleSlotClick(court.id, court.name, slot.time, slot.isAvailable)}
-                    >
-                      {slot.time}
-                    </button>
-                  ))}
+      {/* 👉 แสดง Loading หมุนๆ ตอนกำลังดึงข้อมูล */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}></i>
+          <p>กำลังโหลดคิวสนามแบดมินตัน ยิม 4...</p>
+        </div>
+      ) : (
+        <div className="court-list">
+          {courts.map((court) => (
+            <div key={court.id} className="court-booking-card">
+              <h3 className="court-title">{court.title}</h3>
+              <div className="court-details">
+                <img src={court.img} alt={court.name} className="court-thumbnail" />
+                <div className="court-info">
+                  <h4>{court.name}</h4>
+                  {court.desc && <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{court.desc}</p>}
+                  <p>ช่วงเวลาที่สามารถจองได้ :</p>
+                  <div className="time-slots">
+                    {court.slots.map((slot, index) => (
+                      <button 
+                        key={index} 
+                        className={`time-btn ${slot.isAvailable ? 'available' : 'unavailable'}`}
+                        onClick={() => handleSlotClick(court.id, court.name, slot.time, slot.isAvailable)}
+                      >
+                        {slot.time}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* --- Popup (Modal) --- */}
       {isModalOpen && (
@@ -170,7 +148,8 @@ function BadmintonGym4({ onBack }) {
             <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
               วันที่ : {selectedBooking?.date} เวลา : {selectedBooking?.time} น.
             </p>
-            <p style={{ color: '#666', marginBottom: '1.5rem' }}>สนาม/ห้อง Tennis Court</p>
+            {/* ✅ แก้ไขข้อความใน Modal ให้ตรงกับห้องนี้ */}
+            <p style={{ color: '#666', marginBottom: '1.5rem' }}>สนาม/ห้อง Badminton Court Gym 4</p>
             
             <p className="warning-text">
               กรุณาดำเนินการเช็คอินที่หน้า Counter ก่อนเวลา 15 นาที<br/>

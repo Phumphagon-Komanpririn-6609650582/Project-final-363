@@ -16,10 +16,9 @@ function Login({ onLogin }) {
     setErrorMsg('');
 
     try {
-      // ⚠️ ยิง API ไปหา Backend ของเราเอง (พอร์ต 4000)
-      const apiUrl = `/api/login`; 
+      // 👉 ยิง API ไปหา Backend ของเราที่พอร์ต 4000 โดยตรง
+      const apiUrl = 'http://localhost:4000/api/login'; 
 
-      // เปลี่ยนเป็น POST และส่ง username, password ไปให้ Backend จัดการ
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -36,22 +35,24 @@ function Login({ onLogin }) {
       // 3. เช็คว่า Backend ตอบกลับมาว่าสำเร็จหรือไม่ (response.ok คือ status 200)
       if (response.ok) {
         
-        // เซฟชื่อและรหัสนักศึกษาลงเครื่อง (ดึงข้อมูลจาก result.studentData ที่ Backend ส่งมาให้)
-        if (result.studentData) {
-          localStorage.setItem('studentName', result.studentData.name);
-          localStorage.setItem('studentId', result.studentData.studentId);
+        // เซฟข้อมูลลงเครื่อง (Backend ของเราส่งข้อมูลกลับมาในชื่อ result.user)
+        if (result.user) {
+          localStorage.setItem('studentName', result.user.name);
+          localStorage.setItem('studentId', result.user.studentId);
+          localStorage.setItem('userRole', result.user.role); // เก็บ Role ลงไปด้วย
         }
         
-        onLogin(); // เรียกฟังก์ชันเพื่อให้ App.jsx เปลี่ยนไปหน้าหลัก
+        // 👉 สำคัญมาก: ส่งข้อมูล User กลับไปให้ App.jsx เพื่อสลับหน้า Admin/Student
+        onLogin(result.user); 
 
       } else {
-        // ถ้าไม่สำเร็จ ให้เอาข้อความ Error ที่ Backend ส่งมาไปแสดงผลเลย
-        setErrorMsg(result.error || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
+        // ถ้าไม่สำเร็จ ให้เอาข้อความ Error ที่ Backend ส่งมาไปแสดงผล
+        setErrorMsg(result.error || result.message || 'เกิดข้อผิดพลาดในการเข้าสู่ระบบ');
       }
 
     } catch (error) {
       console.error('Login Error:', error);
-      setErrorMsg('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ Backend ได้ กรุณาลองใหม่อีกครั้ง');
+      setErrorMsg('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ Backend ได้ กรุณาตรวจสอบว่า Backend กำลังรันอยู่');
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +70,11 @@ function Login({ onLogin }) {
 
         <form className="login-form" onSubmit={handleLogin}>
           {/* แสดงข้อความ Error สีแดง ถ้ามีข้อผิดพลาด */}
-          {errorMsg && <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.875rem', textAlign: 'center', backgroundColor: '#FFEBEE', padding: '0.5rem', borderRadius: '4px' }}>{errorMsg}</div>}
+          {errorMsg && (
+            <div style={{ color: 'red', marginBottom: '1rem', fontSize: '0.875rem', textAlign: 'center', backgroundColor: '#FFEBEE', padding: '0.5rem', borderRadius: '4px' }}>
+              {errorMsg}
+            </div>
+          )}
 
           <div className="input-group">
             <label>User name</label>

@@ -1,100 +1,61 @@
-import React, { useState } from 'react';
-// นำเข้ารูปภาพคาราโอเกะ
-import roomImg from '../assets/Karaoke Banner.png'; 
+import React, { useState, useEffect } from 'react';
 import BookingDateSelector from './BookingDateSelector';
-
-const initialRoomData = [
-  {
-    id: 'S',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size S',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 4 ท่าน (ค่าสาธารณูปโภค 150/ชม.)',
-    img:  'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=67bcff47-73e7-3081-f721-3a0d2d98bd45',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: false },
-      { time: '20:00', isAvailable: false }, { time: '21:00', isAvailable: true },
-    ]
-  },
-  {
-    id: 'M1',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size M Room 1',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 8 ท่าน (ค่าสาธารณูปโภค 180/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=c311092b-250f-d341-19e9-3a0d2d984e3e',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: true }, { time: '21:00', isAvailable: true },
-    ]
-  },
-  {
-    id: 'M2',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size M Room 2',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 8 ท่าน (ค่าสาธารณูปโภค 180/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=6847e739-409c-dfa4-7849-3a0d2d981d94',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: true }, { time: '21:00', isAvailable: true },
-    ]
-  },
-  {
-    id: 'L',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size L',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 12 ท่าน (ค่าสาธารณูปโภค 210/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=42ba0127-2e94-2a63-f3b2-3a0d2d9786d6',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: false },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: true }, { time: '21:00', isAvailable: true },
-    ]
-  },
-  {
-    id: 'XL',
-    title: 'Melody Sphere Zone Karaoke',
-    name: 'Karaoke size XL',
-    desc: 'สามารถเข้าใช้บริการได้ไม่เกิน 20 ท่าน (ค่าสาธารณูปโภค 250/ชม.)',
-    img: 'https://bookyourcourtapi.psm.tu.ac.th/File/DownloadBinaryFile?id=3ec35189-7e3c-f282-cdef-3a0d2d96eb03',
-    slots: [
-      { time: '10:00', isAvailable: true }, { time: '11:00', isAvailable: true },
-      { time: '12:00', isAvailable: true }, { time: '13:00', isAvailable: true },
-      { time: '14:00', isAvailable: true }, { time: '15:00', isAvailable: true },
-      { time: '16:00', isAvailable: true }, { time: '17:00', isAvailable: true },
-      { time: '18:00', isAvailable: true }, { time: '19:00', isAvailable: true },
-      { time: '20:00', isAvailable: true }, { time: '21:00', isAvailable: true },
-    ]
-  }
-];
+// ❌ ลบการ import roomImg ออก เพราะเราดึงรูปภาพและรายละเอียดจากฐานข้อมูลเรียบร้อยแล้ว
 
 function KaraokeBooking({ onBack }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  const [rooms, setRooms] = useState(initialRoomData);
+  // 👉 1. State สำหรับเก็บข้อมูลห้องคาราโอเกะที่ดึงมาจากฐานข้อมูลจริง
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
 
- // 👉 สร้าง State สำหรับวันที่ที่เลือก (เริ่มต้นเป็นวันที่วันนี้)
-   const [selectedDate, setSelectedDate] = useState(
-     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
-   );
+  // 👉 สร้าง State สำหรับวันที่ที่เลือก (เริ่มต้นเป็นวันที่วันนี้)
+  const [selectedDate, setSelectedDate] = useState(
+    new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
+  );
 
-   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
+  // 👉 2. ยิง API ดึงข้อมูลห้องคาราโอเกะทั้งหมดจาก MongoDB 
+  useEffect(() => {
+    const fetchKaraokeRooms = async () => {
+      try {
+        setLoading(true);
+        // ขอข้อมูลทั้งหมดที่เป็นหมวด Karaoke
+        const response = await fetch('http://localhost:4000/api/facilities?type=Karaoke');
+        const data = await response.json();
+
+        // ⚠️ กรองคัดเลือกเฉพาะข้อมูลที่เป็นห้องของ "Melody Sphere Zone Karaoke"
+        const karaokeData = data.filter(item => item.name === 'Melody Sphere Zone Karaoke');
+
+        // ปรับแต่งฟอร์แมต Object ข้อมูลให้เข้าขาเข้าลูปแสดงผลเหมือนเดิม
+        const formattedRooms = karaokeData.map(room => ({
+          id: room._id, // ใช้ ID ผูกมาจากวัตถุจริงของ MongoDB
+          title: room.name,
+          name: room.room, // ชื่อย่อยของขนาดห้อง เช่น Karaoke size S, Karaoke size M Room 1
+          desc: room.desc, // คำอธิบายขีดจำกัดคนและราคาค่าบริการ
+          img: room.img,   // ลิงก์รูปภาพสแน็ปยิงตรงมาจาก DB
+          // แตกอาร์เรย์สล็อตเวลาที่แนบอยู่ในคอลเลกชันมาจัดเป็นปุ่มกด
+          slots: room.slots.map(timeStr => ({
+            time: timeStr,
+            isAvailable: true // เปิดปุ่มสถานะพร้อมจองเป็นค่าเรนเดอร์เริ่มต้น
+          }))
+        }));
+
+        setRooms(formattedRooms);
+        setLoading(false);
+      } catch (error) {
+        console.error('❌ ดึงข้อมูลห้องคาราโอเกะล้มเหลว:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchKaraokeRooms();
+  }, [selectedDate]);
+
+  // --------------------------------------------------------
+
+  const handleSlotClick = (roomId, roomName, time, isAvailable) => {
     if (isAvailable) {
-      // ✅ แก้ไข: ใช้ selectedDate จาก State ตรงๆ ข้อมูลใน Popup จะได้ตรงกับวันที่เลือก
       setSelectedBooking({ roomId, roomName, time, date: selectedDate });
       setIsModalOpen(true);
     }
@@ -121,9 +82,10 @@ function KaraokeBooking({ onBack }) {
     setRooms(updatedRooms);
     setIsModalOpen(false);
     setSelectedBooking(null);
-
-    alert('จองสำเร็จ!');
+    alert('จองคาราโอเกะสำเร็จ! (จำลองการกดจอง)');
   };
+
+  // --------------------------------------------------------
 
   return (
     <div className="booking-page-container" style={{ backgroundColor: '#EEF0F8' }}>
@@ -131,42 +93,49 @@ function KaraokeBooking({ onBack }) {
         <i className="fa-solid fa-chevron-left"></i> ย้อนกลับ
       </div>
 
-     <div className="date-display-section" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
-         {/* 👉 เรียกใช้ Component เลือกวันที่ตรงนี้ */}
+      <div className="date-display-section" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
          <BookingDateSelector 
             selectedDate={selectedDate} 
             onDateChange={(newDate) => setSelectedDate(newDate)} 
          />
       </div>
 
-      <div className="court-list">
-        {rooms.map((room) => (
-          <div key={room.id} className="court-booking-card">
-            <h3 className="court-title">{room.title}</h3>
-            <div className="court-details">
-              <img src={room.img} alt={room.name} className="court-thumbnail" />
-              <div className="court-info">
-                <h4>{room.name}</h4>
-                <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{room.desc}</p>
-                <p>ช่วงเวลาที่สามารถจองได้ :</p>
-                <div className="time-slots">
-                  {room.slots.map((slot, index) => (
-                    <button 
-                      key={index} 
-                      className={`time-btn ${slot.isAvailable ? 'available' : 'unavailable'}`}
-                      onClick={() => handleSlotClick(room.id, room.name, slot.time, slot.isAvailable)}
-                    >
-                      {slot.time}
-                    </button>
-                  ))}
+      {/* 👉 แสดงสถานะกำลังหมุนโหลดเพื่อความ Smooth ของ UI */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}></i>
+          <p>กำลังโหลดคิวห้องคาราโอเกะ...</p>
+        </div>
+      ) : (
+        <div className="court-list">
+          {rooms.map((room) => (
+            <div key={room.id} className="court-booking-card">
+              <h3 className="court-title">{room.title}</h3>
+              <div className="court-details">
+                <img src={room.img} alt={room.name} className="court-thumbnail" />
+                <div className="court-info">
+                  <h4>{room.name}</h4>
+                  <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{room.desc}</p>
+                  <p>ช่วงเวลาที่สามารถจองได้ :</p>
+                  <div className="time-slots">
+                    {room.slots.map((slot, index) => (
+                      <button 
+                        key={index} 
+                        className={`time-btn ${slot.isAvailable ? 'available' : 'unavailable'}`}
+                        onClick={() => handleSlotClick(room.id, room.name, slot.time, slot.isAvailable)}
+                      >
+                        {slot.time}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {/* --- Popup (Modal) --- */}
+      {/* --- Popup (Modal) ยืนยันการจอง --- */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}> 
           <div className="modal-content" onClick={(e) => e.stopPropagation()}> 
