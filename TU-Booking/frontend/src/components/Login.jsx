@@ -35,14 +35,14 @@ function Login({ onLogin }) {
       // 3. เช็คว่า Backend ตอบกลับมาว่าสำเร็จหรือไม่ (response.ok คือ status 200)
       if (response.ok) {
         
-        // เซฟข้อมูลลงเครื่อง (Backend ของเราส่งข้อมูลกลับมาในชื่อ result.user)
+        // 👉 🎯 [จุดแก้ไขคีย์หลัก] ปรับเปลี่ยนชื่อคีย์ความจำให้ตรงเซ็ตเดียวกับไฟล์ Header.jsx เปี๊ยบๆ
         if (result.user) {
-          localStorage.setItem('studentName', result.user.name);
           localStorage.setItem('studentId', result.user.studentId);
-          localStorage.setItem('userRole', result.user.role); // เก็บ Role ลงไปด้วย
+          localStorage.setItem('role', result.user.role); // 🔥 เปลี่ยนจาก 'userRole' -> 'role'
+          localStorage.setItem('name', result.user.name); // 🔥 เปลี่ยนจาก 'studentName' -> 'name'
         }
         
-        // 👉 สำคัญมาก: ส่งข้อมูล User กลับไปให้ App.jsx เพื่อสลับหน้า Admin/Student
+        // 👉 ส่งข้อมูล User กลับไปให้ App.jsx เพื่อสลับหน้า Admin/Student
         onLogin(result.user); 
 
       } else {
@@ -54,7 +54,7 @@ function Login({ onLogin }) {
       console.error('Login Error:', error);
       setErrorMsg('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ Backend ได้ กรุณาตรวจสอบว่า Backend กำลังรันอยู่');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 

@@ -1,120 +1,166 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import BookingDateSelector from './BookingDateSelector';
 
-function MusicBooking({ onBack }) {
+function MusicBooking({ onBack, user }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
-
-  // 👉 1. State สำหรับเก็บข้อมูลห้องซ้อมดนตรีที่ดึงมาจากฐานข้อมูลจริง
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // 👉 สร้าง State สำหรับวันที่ที่เลือก (เริ่มต้นเป็นวันที่วันนี้)
   const [selectedDate, setSelectedDate] = useState(
     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
-  // 👉 2. ยิง API ไปกวาดข้อมูลห้องซ้อมดนตรีทั้งหมดมาจาก MongoDB
-  useEffect(() => {
-    const fetchMusicRooms = async () => {
-      try {
-        setLoading(true);
-        // ขอข้อมูลทั้งหมดที่เป็นหมวด Karaoke (หลังบ้านเราเซฟห้องดนตรีไว้ในก้อน type: 'Karaoke')
-        const response = await fetch('http://localhost:4000/api/facilities?type=Karaoke');
-        const data = await response.json();
-
-        // ⚠️ คัดกรองเอาเฉพาะห้องที่เป็นของ "Melody Sphere Zone Music" เท่านั้น
-        const musicData = data.filter(item => item.name === 'Melody Sphere Zone Music');
-
-        // จัดรูปฟอร์แมตโครงสร้าง Object ให้เข้าข่ายตัวแปรที่ลูปแสดงผลใน UI
-        const formattedRooms = musicData.map(room => ({
-          id: room._id, // ใช้ ID ที่เจนมาจากวัตถุจริงของ MongoDB
-          title: room.name,
-          name: room.room, // ชื่อย่อยของห้อง เช่น Music Practice Room 1
-          desc: room.desc, // รายละเอียดและราคาค่าบริการรายชั่วโมง
-          img: room.img,   // ลิงก์ URL รูปภาพที่ดึงมาจาก DB
-          // ดึงอาร์เรย์สล็อตเวลาที่แนบอยู่ในคอลเลกชันมาจัดเป็น Object สถานะปุ่ม
-          slots: room.slots.map(timeStr => ({
-            time: timeStr,
-            isAvailable: true // เปิดปุ่มสถานะพร้อมจองเป็นค่าเริ่มต้น
-          }))
-        }));
-
-        setRooms(formattedRooms);
-        setLoading(false);
-      } catch (error) {
-        console.error('❌ ดึงข้อมูลห้องซ้อมดนตรีล้มเหลว:', error);
-        setLoading(false);
+  // 📥 1. ดึงข้อมูลและกรองเฉพาะหมวดหมู่ Music ผ่านท่อหลัก type=Karaoke ตามพิมพ์เขียว
+  const fetchMusicRooms = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:4000/api/facilities?type=Karaoke&date=${selectedDate}`);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'ดึงข้อมูลจากเซิร์ฟเวอร์ล้มเหลว');
       }
-    };
 
-    fetchMusicRooms();
+      // 🎯 กรองเอาเฉพาะห้องที่เป็นโซนดนตรี Music ตามข้อกำหนดเงื่อนไข
+      const musicData = data.filter(item => 
+        item.name?.toLowerCase().includes('music') ||
+        item.room?.toLowerCase().includes('music')
+      );
+
+      const formattedRooms = musicData.map(room => ({
+        id: room._id,
+        title: room.name,
+        name: room.room,
+        desc: room.desc, 
+        img: room.img,
+        type: room.type,
+        slots: room.slots ? room.slots.map(slot => ({
+          time: slot.time,
+          isAvailable: slot.isAvailable 
+        })) : []
+      }));
+
+      setRooms(formattedRooms);
+      setLoading(false);
+    } catch (error) {
+      console.error('❌ ดึงข้อมูลห้องซ้อมดนตรีล้มเหลว:', error);
+      setLoading(false);
+    }
   }, [selectedDate]);
 
-  // --------------------------------------------------------
+  useEffect(() => {
+    fetchMusicRooms();
+  }, [fetchMusicRooms]);
 
+  // 🛡️ 2. เช็คเวลาสล็อตที่ผ่านมาแล้ว ลอกลอจิกพิมพ์เขียวเป๊ะๆ ปลอดภัยเรื่อง พ.ศ./ค.ศ.
   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
-    if (isAvailable) {
-      setSelectedBooking({ roomId, roomName, time, date: selectedDate });
-      setIsModalOpen(true);
+    // 1. เช็คว่ามีคนจองไปแล้วหรือยัง
+    if (!isAvailable) {
+      alert("⚠️ ช่วงเวลานี้ถูกจองไปแล้วครับ!");
+      return;
+    }
+
+    // 2. เช็คว่าเวลาที่จะจอง มันเลยเวลาปัจจุบันไปหรือยัง
+    try {
+      const [d, m, y] = selectedDate.split('/');
+      let year = parseInt(y);
+      
+      if (year < 100) {
+        year = year + 2500 - 543; 
+      } else if (year > 2500) {
+        year = year - 543; 
+      }
+
+      const startTime = time.split('-')[0].trim();
+      const [hh, mm] = startTime.split(':');
+
+      const slotDateTime = new Date(year, parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm));
+      const now = new Date();
+
+      if (slotDateTime < now) {
+        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้วครับเพื่อน!");
+        return; 
+      }
+    } catch (error) {
+      console.error("Error parsing date/time validation:", error);
+    }
+
+    // ถ้าผ่านเงื่อนไขทั้งหมด ค่อยเปิด Modal ยืนยันการจอง
+    setSelectedBooking({ roomId, roomName, time, date: selectedDate });
+    setIsModalOpen(true);
+  };
+
+  // 💾 3. ยืนยันบันทึกข้อมูลใบจอง
+  const confirmBooking = async () => {
+    const { roomId, roomName, time, date } = selectedBooking;
+    const currentRoom = rooms.find(r => r.id === roomId);
+
+    const bookingData = {
+      studentId: user?.studentId || "6609650582",
+      facilityId: roomId,      
+      facilityName: currentRoom?.title || "Melody Sphere Zone Music",
+      roomName: currentRoom?.name || roomName,
+      bookingDate: date,        
+      timeSlot: time,
+      type: currentRoom?.type || 'Karaoke' 
+    };
+
+    try {
+      const response = await fetch('http://localhost:4000/api/bookings/reserve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookingData)
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('🎉 จองสำเร็จ!');
+        fetchMusicRooms(); 
+      } else {
+        alert(result.message || 'เกิดข้อผิดพลาดในการจอง');
+      }
+    } catch (error) {
+      alert('ระบบหลังบ้านมีปัญหา!');
+    } finally {
+      setIsModalOpen(false);
+      setSelectedBooking(null);
     }
   };
 
-  const confirmBooking = () => {
-    const { roomId, time } = selectedBooking;
-    
-    const updatedRooms = rooms.map(room => {
-      if (room.id === roomId) {
-        return {
-          ...room,
-          slots: room.slots.map(slot => {
-            if (slot.time === time) return { ...slot, isAvailable: false };
-            return slot;
-          })
-        };
-      }
-      return room;
-    });
-
-    setRooms(updatedRooms);
-    setIsModalOpen(false);
-    setSelectedBooking(null);
-    alert('จองห้องซ้อมดนตรีสำเร็จ! (จำลองการกดจอง)');
-  };
-
-  // --------------------------------------------------------
-
   return (
     <div className="booking-page-container" style={{ backgroundColor: '#EEF0F8' }}>
-      {/* Breadcrumb ย้อนกลับ */}
-      <div className="breadcrumb" onClick={onBack} style={{ cursor: 'pointer', color: '#666' }}>
+      
+      <div className="breadcrumb" onClick={onBack} style={{ cursor: 'pointer', color: '#666', marginBottom: '1rem' }}>
         <i className="fa-solid fa-chevron-left"></i> ย้อนกลับ
       </div>
 
       <div className="date-display-section" style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '2rem' }}>
-         <BookingDateSelector 
-            selectedDate={selectedDate} 
-            onDateChange={(newDate) => setSelectedDate(newDate)} 
-         />
+         <BookingDateSelector selectedDate={selectedDate} onDateChange={(newDate) => setSelectedDate(newDate)} />
       </div>
 
-      {/* 👉 แสดงวงล้อโหลดหมุนติ้ว ๆ ช่วงรอข้อมูลวิ่งมาจากเซิร์ฟเวอร์ */}
       {loading ? (
         <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
           <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}></i>
-          <p>กำลังโหลดคิวห้องซ้อมดนตรี...</p>
+          <p>กำลังโหลดข้อมูลห้อง...</p>
         </div>
       ) : (
         <div className="court-list">
           {rooms.map((room) => (
             <div key={room.id} className="court-booking-card">
               <h3 className="court-title">{room.title}</h3>
+              
               <div className="court-details">
-                <img src={room.img} alt={room.name} className="court-thumbnail" />
+                <img 
+                  src={room.img} 
+                  alt={room.name} 
+                  className="court-thumbnail" 
+                  onError={(e) => { e.target.onerror = null; e.target.src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=200&auto=format&fit=crop" }} 
+                />
+                
                 <div className="court-info">
                   <h4>{room.name}</h4>
-                  <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{room.desc}</p>
-                  <p>ช่วงเวลาที่สามารถจองได้ :</p>
+                  {room.desc && <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{room.desc}</p>}
+                  
                   <div className="time-slots">
                     {room.slots.map((slot, index) => (
                       <button 
@@ -128,36 +174,27 @@ function MusicBooking({ onBack }) {
                   </div>
                 </div>
               </div>
+
             </div>
           ))}
         </div>
       )}
 
-      {/* --- Popup (Modal) ยืนยันการจอง --- */}
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}> 
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}> 
+          <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}> 
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
             <h2 className="modal-title">ยืนยันการจอง</h2>
             <div className="modal-icon">
-              <i className="fa-solid fa-calendar-check" style={{ fontSize: '4rem', color: '#333' }}></i>
+              {/* 🎯 สลับใช้ไอคอนเครื่องดนตรีสำหรับหน้าซ้อมดนตรีโดยเฉพาะตามเนื้อหา */}
+              <i className="fa-solid fa-guitar" style={{ fontSize: '4rem', color: '#333', margin: '1rem 0' }}></i>
             </div>
-            
             <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>SPOT : {selectedBooking?.roomName}</h3>
-            <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>
+            <p style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem' }}>
               วันที่ : {selectedBooking?.date} เวลา : {selectedBooking?.time} น.
             </p>
-            <p style={{ color: '#666', marginBottom: '1.5rem' }}>หมวดหมู่: ห้องซ้อมดนตรี</p>
-            
-            <p className="warning-text">
-              กรุณาดำเนินการเช็คอินที่หน้า Counter ก่อนเวลา 15 นาที<br/>
-              หรือต้องการยกเลิกสามารถดำเนินการยกเลิกการจองได้ก่อนเวลา 120 นาที
-            </p>
-
             <div className="modal-actions">
-              <button className="btn-confirm" onClick={confirmBooking}>
-                <i className="fa-solid fa-check"></i> ยืนยันการจอง
-              </button>
+              <button className="btn-confirm" onClick={confirmBooking}><i className="fa-solid fa-check"></i> ยืนยันการจอง</button>
               <button className="btn-cancel" onClick={() => setIsModalOpen(false)}>ยกเลิก</button>
             </div>
           </div>

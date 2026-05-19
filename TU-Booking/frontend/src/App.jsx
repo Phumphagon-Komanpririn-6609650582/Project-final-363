@@ -19,7 +19,6 @@ import KromLuangBooking from './components/KromLuangBooking';
 import Rewards from './components/Rewards';
 import MyBooking from './components/MyBooking'; 
 
-// --- นำเข้า Component ฝั่ง Admin ---
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminFacilities from './components/admin/AdminFacilities';
 import AdminNavbar from './components/admin/AdminNavbar'; 
@@ -31,36 +30,29 @@ import AdminReports from './components/admin/AdminReports';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userPoints, setUserPoints] = useState(150);
-  
-  // 👉 1. เพิ่ม State เก็บ Role ของผู้ใช้งาน (ดึงมาจาก Database)
   const [userRole, setUserRole] = useState('student'); 
+  const [currentUser, setCurrentUser] = useState(null); 
   
   const navigate = useNavigate(); 
   const location = useLocation(); 
 
-  // 👉 2. ฟังก์ชันจัดการเมื่อ Login สำเร็จ โดยรับข้อมูล userData มาจาก Login.jsx
   const handleLoginSuccess = (userData) => {
     setIsLoggedIn(true);
-    if (userData) {
-      setUserRole(userData.role || 'student'); // เก็บสิทธิ์ Admin หรือ Student
-      if (userData.points !== undefined) {
-        setUserPoints(userData.points); // เก็บแต้มสะสม
-      }
+    setCurrentUser(userData); 
+    setUserRole(userData.role || 'student');
+    if (userData.points !== undefined) {
+      setUserPoints(userData.points);
     }
   };
 
   if (!isLoggedIn) {
-    // 👉 3. ส่งฟังก์ชัน handleLoginSuccess ไปให้หน้า Login ทำงาน
     return <Login onLogin={handleLoginSuccess} />;
   }
 
-  // 👉 4. เช็คหน้า Admin จากสิทธิ์ (Role) จริงๆ ใน Database
   const isAdminPage = userRole === 'admin';
 
   return (
     <div className="App">
-      
-      {/* 👉 5. สลับ Navbar อัตโนมัติตามสิทธิ์ของผู้ใช้ */}
       {isAdminPage ? <AdminNavbar /> : <Navbar />}
       
       <div className="main-wrapper">
@@ -68,77 +60,60 @@ function App() {
         <main className="content-area">
           
           <Routes>
-            {/* ========================================== */}
-            {/* 🎓 ROUTES ฝั่งนักศึกษา (STUDENT) */}
-            {/* ========================================== */}
             <Route path="/" element={<Home />} />
             
-            {/* --- หมวดหมู่กีฬา --- */}
             <Route path="/sport" element={
               <SportSelection 
                 onBack={() => navigate('/')} 
                 onSelectCourt={(courtType) => {
+                  // 👉 แก้คำผิดตรงนี้! Inrerzone -> Interzone
                   if (courtType === 'Tennis Court') navigate('/tennis_court');
-                  if (courtType === 'Badminton Court Inrerzone') navigate('/badminton_court_inrerzone');
+                  if (courtType === 'Badminton Court Interzone') navigate('/badminton_court_interzone');
                   if (courtType === 'Badminton Court Gym 4') navigate('/badminton_court_gym_4');
                 }}
               />
             } />
-            <Route path="/tennis_court" element={<TennisCourt onBack={() => navigate('/sport')} />} />
-            <Route path="/badminton_court_inrerzone" element={<BadmintonCourtInterzone onBack={() => navigate('/sport')} />} />
-            <Route path="/badminton_court_gym_4" element={<BadmintonCourtGym4 onBack={() => navigate('/sport')} />} />
+            <Route path="/tennis_court" element={<TennisCourt onBack={() => navigate('/sport')} user={currentUser} />} />
+            
+            {/* 👉 แก้ Path ตรงนี้ให้ตรงกับข้างบนด้วย */}
+            <Route path="/badminton_court_interzone" element={<BadmintonCourtInterzone onBack={() => navigate('/sport')} user={currentUser} />} />
+            <Route path="/badminton_court_gym_4" element={<BadmintonCourtGym4 onBack={() => navigate('/sport')} user={currentUser} />} />
           
-            {/* --- หมวดหมู่คาราโอเกะ & ดนตรี --- */}
             <Route path="/karaoke" element={
               <Karaoke 
                 onBack={() => navigate('/')} 
                 onSelectRoom={(roomName) => {
-                  if (roomName === 'Melody Sphere Zone Karaoke') {
-                    navigate('/karaoke_booking'); 
-                  } else if (roomName === 'Melody Sphere Zone Music Room') {
-                    navigate('/music_booking'); 
-                  }
+                  if (roomName === 'Melody Sphere Zone Karaoke') navigate('/karaoke_booking');
+                  else if (roomName === 'Melody Sphere Zone Music Room') navigate('/music_booking');
                 }}
               />
             } />
-            <Route path="/karaoke_booking" element={<KaraokeBooking onBack={() => navigate('/karaoke')} />} />
-            <Route path="/music_booking" element={<MusicBooking onBack={() => navigate('/karaoke')} />} />
+            <Route path="/karaoke_booking" element={<KaraokeBooking onBack={() => navigate('/karaoke')} user={currentUser} />} />
+            <Route path="/music_booking" element={<MusicBooking onBack={() => navigate('/karaoke')} user={currentUser} />} />
             
-            {/* --- หมวดหมู่ห้องเรียน --- */}
             <Route path="/study" element={
               <Study 
                 onBack={() => navigate('/')}
                 onSelectRoom={(roomName) => {
-                  if (roomName === 'Puey Ungphakorn Library') {
-                    navigate('/study_booking'); 
-                  } else if (roomName === 'Krom Luang Naradhiwas Rajanagarinda Learning Centre') {
-                    navigate('/krom_luang_booking'); 
-                  }
+                  if (roomName === 'Puey Ungphakorn Library') navigate('/study_booking');
+                  else if (roomName === 'Krom Luang Naradhiwas Rajanagarinda Learning Centre') navigate('/krom_luang_booking');
                 }}
               />
             } />
-            <Route path="/study_booking" element={<StudyBooking onBack={() => navigate('/study')} />} />
-            <Route path="/krom_luang_booking" element={<KromLuangBooking onBack={() => navigate('/study')} />} />
+            <Route path="/study_booking" element={<StudyBooking onBack={() => navigate('/study')} user={currentUser} />} />
+            <Route path="/krom_luang_booking" element={<KromLuangBooking onBack={() => navigate('/study')} user={currentUser} />} />
 
-            {/* --- เมนูจากแถบ Navbar --- */}
             <Route path="/news" element={<Attention />} />
-            <Route path="/my-booking" element={<MyBooking />} />
+            <Route path="/my-booking" element={<MyBooking user={currentUser} />} />
             <Route path="/rewards" element={<Rewards points={userPoints} setPoints={setUserPoints} />} />
 
-
-            {/* ========================================== */}
-            {/* 💻 ROUTES ฝั่งผู้ดูแลระบบ (ADMIN) */}
-            {/* ========================================== */}
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
             <Route path="/admin-facilities" element={<AdminFacilities />} />
-            
-            {/* หน้า Admin ที่เตรียมไว้เพื่อไม่ให้ขึ้น Error เวลาคลิก */}
             <Route path="/admin-bookings" element={<AdminBookings />} />
             <Route path="/admin-reports" element={<AdminReports />} />
             <Route path="/admin-users" element={<AdminUsers />} />
             <Route path="/admin-announcements" element={<AdminAnnouncements />} />
 
-            {/* หน้าเผื่อฉุกเฉิน / NotFound */}
             <Route path="*" element={<Home />} />
           </Routes>
 

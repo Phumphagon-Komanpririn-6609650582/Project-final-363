@@ -1437,3 +1437,23 @@
   color: #FFFFFF !important;
   font-weight: bold;
 }
+
+.btn-close-modal {
+  width: 100%;
+  padding: 12px;
+  margin-top: 1.5rem;
+  background-color: #f8f9fa; /* สีพื้นหลังอ่อนๆ */
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 8px; /* ขอบมน */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease; /* ให้มันค่อยๆ เปลี่ยนสี */
+}
+
+.btn-close-modal:hover {
+  background-color: #e31b23; /* เปลี่ยนเป็นสีแดงของมึงตอน Hover */
+  color: white;
+  border-color: #e31b23;
+  transform: translateY(-2px); /* ให้ปุ่มเด้งขึ้นนิดนึง */
+}

@@ -1,34 +1,71 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function Rewards({ points, setPoints }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  // 👉 1. เพิ่ม State เก็บข้อมูลตั๋ว (Ref Code)
   const [ticketCode, setTicketCode] = useState(null);
+  const [rewardItems, setRewardItems] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // รายการของรางวัล
-  const rewardItems = [
-    { id: 1, name: 'น้ำดื่ม TU', points: 20, icon: 'fa-solid fa-bottle-water', color: '#4A90E2', category: 'ทั่วไป' },
-    { id: 2, name: 'ดินสอ 2B / ปากกาน้ำเงิน', points: 15, icon: 'fa-solid fa-pen', color: '#F5A623', category: 'ทั่วไป' },
-    { id: 3, name: 'ขนมขบเคี้ยว (Snack)', points: 30, icon: 'fa-solid fa-cookie', color: '#D0021B', category: 'ทั่วไป' },
-    { id: 4, name: 'ฟรี! คาราโอเกะ 1 ชั่วโมง', points: 100, icon: 'fa-solid fa-microphone', color: '#BD10E0', category: 'บันเทิง' },
-  ];
+  // ดึงรหัสนักศึกษาจาก localStorage เพื่อใช้ระบุตัวตน
+  const studentId = localStorage.getItem('studentId') || "6609650582";
+
+  useEffect(() => {
+    const fetchRewards = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('http://localhost:4000/api/rewards');
+        const data = await response.json();
+        if (response.ok) {
+          setRewardItems(data);
+        }
+      } catch (error) {
+        console.error('❌ ดึงข้อมูลของรางวัลล้มเหลว:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRewards();
+  }, []);
 
   const handleSelectItem = (item) => {
     setSelectedItem(item);
     setIsModalOpen(true);
   };
 
-  // 👉 2. แก้ไขฟังก์ชันกดยืนยัน ให้สร้างรหัสโชว์พนักงานแทนการใช้ alert()
-  const confirmRedeem = () => {
-    if (points >= selectedItem.points) {
-      setPoints(points - selectedItem.points); // หักแต้ม
-      setIsModalOpen(false); // ปิดหน้าต่างถามยืนยัน
+  // 👉 แก้ไขตรรกะใหม่ ส่งข้อมูลชุดเล็กไป แล้วรอรับ Ticket Code ที่หลังบ้านสุ่มให้
+  const confirmRedeem = async () => {
+    if (points < selectedItem.points) return;
 
-      // สุ่มรหัสอ้างอิง 6 หลัก (A-Z, 0-9)
-      const randomRef = Math.random().toString(36).substring(2, 8).toUpperCase();
-      setTicketCode(randomRef); // เปิด Popup ตั๋วรับรางวัลโชว์พนักงาน
+    // 🛡️ ปลอดภัย 100%: ส่งไปแค่ ID ผู้ใช้กับ ID ของรางวัล ที่เหลือให้หลังบ้านตรวจสอบและจัดการเอง
+    const redeemData = {
+      studentId: studentId,
+      rewardId: selectedItem._id || selectedItem.id
+    };
+
+    try {
+      const response = await fetch('http://localhost:4000/api/redeem/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(redeemData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // 1. อัปเดตสถานะแต้มคงเหลือใหม่ที่หักคำนวณมาจากฐานข้อมูลจริง
+        setPoints(result.newPoints); 
+        
+        // 2. 🎟️ เอารหัสตั๋วสิทธิ์รับรางวัลที่เสกมาจากหลังบ้าน (Backend) มาเซ็ตโชว์ใน Popup
+        setTicketCode(result.ticketCode); 
+        
+        setIsModalOpen(false);
+      } else {
+        alert(result.message || 'เกิดข้อผิดพลาดในการแลกของรางวัล');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('ระบบหลังบ้านมีปัญหา ไม่สามารถเชื่อมต่อได้!');
     }
   };
 
@@ -39,40 +76,62 @@ function Rewards({ points, setPoints }) {
         แต้มสะสมของคุณ: <span className="points-highlight">{points} แต้ม</span>
       </p>
 
-      <div className="rewards-grid">
-        {rewardItems.map((item) => (
-          <div key={item.id} className="reward-card">
-            <div className="reward-icon-wrapper" style={{ color: item.color }}>
-              <i className={item.icon}></i>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '2rem', marginBottom: '1rem' }}></i>
+          <p>กำลังโหลดรายการของรางวัล...</p>
+        </div>
+      ) : rewardItems.length > 0 ? (
+        <div className="rewards-grid">
+          {rewardItems.map((item) => (
+            <div key={item._id || item.id} className="reward-card">
+              <div className="reward-icon-wrapper" style={{ color: item.color || '#4A90E2' }}>
+                {item.img ? (
+                  <img 
+                    src={item.img} 
+                    alt={item.name} 
+                    style={{ width: '80px', height: '80px', objectFit: 'contain', borderRadius: '8px' }}
+                    onError={(e) => { e.target.onerror = null; e.target.src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=150&auto=format&fit=crop" }}
+                  />
+                ) : (
+                  <i className={item.icon || 'fa-solid fa-gift'}></i>
+                )}
+              </div>
+              
+              <h3 className="reward-name">{item.name}</h3>
+              <p className="reward-category">หมวดหมู่: {item.category || 'ทั่วไป'}</p>
+              
+              <button 
+                onClick={() => handleSelectItem(item)}
+                className="btn-redeem"
+                disabled={points < item.points}
+              >
+                Use {item.points} Points
+              </button>
+              {points < item.points && <span className="reward-error-text">แต้มไม่พอ</span>}
             </div>
-            <h3 className="reward-name">{item.name}</h3>
-            <p className="reward-category">หมวดหมู่: {item.category}</p>
-            
-            <button 
-              onClick={() => handleSelectItem(item)}
-              className="btn-redeem"
-              disabled={points < item.points}
-            >
-              ใช้ {item.points} แต้ม
-            </button>
-            {points < item.points && <span className="reward-error-text">แต้มไม่พอ</span>}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+          <p>ยังไม่มีรายการของรางวัลให้แลกในขณะนี้</p>
+        </div>
+      )}
 
       {/* --- Popup ที่ 1: ถามเพื่อยืนยันการหักแต้ม --- */}
       {isModalOpen && selectedItem && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}> 
           <div className="modal-content" onClick={(e) => e.stopPropagation()}> 
             <h2 className="modal-title">ยืนยันการแลกรางวัล</h2>
-            
-            <div className="modal-icon" style={{ color: selectedItem.color }}>
-              <i className={selectedItem.icon} style={{ fontSize: '4rem' }}></i>
+            <div className="modal-icon" style={{ color: selectedItem.color || '#4A90E2' }}>
+              {selectedItem.img ? (
+                <img src={selectedItem.img} alt={selectedItem.name} style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
+              ) : (
+                <i className={selectedItem.icon || 'fa-solid fa-gift'} style={{ fontSize: '4rem' }}></i>
+              )}
             </div>
             
-            <h3 className="reward-name" style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>
-              {selectedItem.name}
-            </h3>
+            <h3 className="reward-name" style={{ fontSize: '1.5rem', marginBottom: '1.5rem' }}>{selectedItem.name}</h3>
             
             <div className="modal-summary-box">
               <div className="summary-row">
@@ -98,7 +157,7 @@ function Rewards({ points, setPoints }) {
         </div>
       )}
 
-      {/* 👉 3. Popup ที่ 2: โชว์ตั๋วให้พนักงานดู (จะเด้งขึ้นมาหลังจากกดยืนยันแล้ว) */}
+      {/* --- Popup ที่ 2: โชว์ตั๋วรหัส 6 หลักที่รับมาจากหลังบ้านให้พนักงานดู --- */}
       {ticketCode && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ textAlign: 'center' }}>
@@ -109,14 +168,11 @@ function Rewards({ points, setPoints }) {
             <div style={{ backgroundColor: '#F8F9FA', padding: '1rem', borderRadius: '0.5rem', margin: '1rem 0' }}>
               <p style={{ fontSize: '0.9rem', color: '#666' }}>กรุณาแสดงรหัสนี้ให้พนักงาน</p>
               
-              {/* โชว์รหัส 6 หลักตัวใหญ่ๆ ให้พนักงานเห็นชัดๆ */}
-              <h1 style={{ letterSpacing: '0.2rem', margin: '0.5rem 0', color: '#333' }}>
-                {ticketCode}
-              </h1>
+              {/* รหัสตรงนี้เป็นข้อมูลจริงจากฐานข้อมูลหลังบ้านเรียบร้อยแล้ว */}
+              <h1 style={{ letterSpacing: '0.2rem', margin: '0.5rem 0', color: '#333' }}>{ticketCode}</h1>
               
-              {/* โชว์เวลา ณ ตอนที่กดแลก */}
               <p style={{ fontSize: '0.85rem', color: '#999' }}>
-                 เวลาแลกสิทธิ์: {new Date().toLocaleTimeString('th-TH')} น.
+                เวลาแลกสิทธิ์: {new Date().toLocaleTimeString('th-TH')} น.
               </p>
             </div>
 
@@ -124,7 +180,6 @@ function Rewards({ points, setPoints }) {
           </div>
         </div>
       )}
-
     </div>
   );
 }

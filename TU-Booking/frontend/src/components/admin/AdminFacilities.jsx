@@ -1,238 +1,244 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 function AdminFacilities() {
-  // 👉 1. State เก็บข้อมูลสถานที่ทั้งหมด (อิงตามหมวดหมู่ในระบบของคุณ)
-  const [facilities, setFacilities] = useState([
-    { id: 1, type: 'Karaoke', name: 'Melody Sphere Zone Karaoke', room: 'Karaoke size M Room 1', capacity: '4-6 คน', status: 'เปิดให้บริการ', statusColor: '#8BE3A8' },
-    { id: 2, type: 'Karaoke', name: 'Melody Sphere Zone Karaoke', room: 'Karaoke size S Room 3', capacity: '2-3 คน', status: 'ปิดปรับปรุง', statusColor: '#FFB3B3' },
-    { id: 3, type: 'Study', name: 'Puey Ungphakorn Library', room: 'Study Room 04', capacity: '5-8 คน', status: 'เปิดให้บริการ', statusColor: '#8BE3A8' },
-    { id: 4, type: 'Sport', name: 'Badminton Court Interzone', room: 'Interzone Badminton Court 03', capacity: '2-4 คน', status: 'เปิดให้บริการ', statusColor: '#8BE3A8' },
-  ]);
+  const [facilities, setFacilities] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // State สำหรับฟอร์ม เพิ่ม/แก้ไข
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
-  
-  const [formData, setFormData] = useState({
-    type: 'Study',
-    name: '',
-    room: '',
-    capacity: '',
-    status: 'เปิดให้บริการ'
+  // 👉 เพิ่ม State สำหรับทำระบบ Filter ค้นหา
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedType, setSelectedType] = useState('All'); // ค่าเริ่มต้นโชว์ทั้งหมด
+
+  // ฟังก์ชันดึงข้อมูลจากหลังบ้านพาร์ท Admin
+  const fetchAdminFacilities = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:4000/api/facilities/admin-list');
+      const data = await response.json();
+      
+      if (response.ok) {
+        let rawArray = [];
+        if (Array.isArray(data)) {
+          rawArray = data;
+        } else if (data.data && Array.isArray(data.data)) {
+          rawArray = data.data;
+        } else if (data.facilities && Array.isArray(data.facilities)) {
+          rawArray = data.facilities;
+        }
+
+        const sanitizedData = rawArray.map(item => ({
+          _id: item._id ? item._id.toString() : (item.id ? item.id.toString() : Math.random().toString()),
+          type: item.type || 'ไม่ระบุ',
+          name: item.name || 'ไม่มีชื่อสถานที่',
+          room: item.room || 'ไม่มีชื่อห้องย่อย',
+          status: item.status || 'เปิดให้บริการ'
+        }));
+
+        setFacilities(sanitizedData);
+      }
+    } catch (error) {
+      console.error('❌ ดึงข้อมูลสถานที่หลังบ้านล้มเหลว:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAdminFacilities();
+  }, []);
+
+  // ฟังก์ชันยิง API สลับสถานะระบบในฐานข้อมูล
+  const handleToggleStatus = async (id, currentStatus) => {
+    const actionText = currentStatus === 'เปิดให้บริการ' ? 'ปิดปรับปรุงระบบ' : 'เปิดให้บริการตามปกติ';
+    
+    if (window.confirm(`คุณต้องการเปลี่ยนสถานะสถานที่นี้เป็น "${actionText}" ใช่หรือไม่?`)) {
+      try {
+        const response = await fetch(`http://localhost:4000/api/facilities/toggle/${id}`, {
+          method: 'POST'
+        });
+        
+        if (response.ok) {
+          fetchAdminFacilities();
+        } else {
+          alert('ไม่สามารถเปลี่ยนสถานะระบบได้');
+        }
+      } catch (error) {
+        console.error('❌ เกิดข้อผิดพลาดในการเชื่อมต่อหลังบ้าน:', error);
+        alert('เชื่อมต่อหลังบ้านล้มเหลว');
+      }
+    }
+  };
+
+  // 👉 3. ตรรกะประมวลผลการกรองข้อมูล (Filter Logic) ยิงสดบนหน้าจอแบบ Realtime
+  const filteredFacilities = facilities.filter(item => {
+    // กรองด้วยประเภทแท็บ (All, Sport, Karaoke, Study)
+    const matchesType = selectedType === 'All' || item.type === selectedType;
+    
+    // กรองด้วยคำค้นหา (เช็คทั้งชื่อสถานที่หลัก และชื่อห้องย่อย)
+    const matchesSearch = 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.room.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return matchesType && matchesSearch;
   });
 
-  // เปิดหน้าต่างเพื่อเพิ่มห้องใหม่
-  const openAddModal = () => {
-    setIsEditMode(false);
-    setFormData({ type: 'Study', name: '', room: '', capacity: '', status: 'เปิดให้บริการ' });
-    setIsModalOpen(true);
-  };
-
-  // เปิดหน้าต่างเพื่อแก้ไขข้อมูล
-  const openEditModal = (item) => {
-    setIsEditMode(true);
-    setCurrentId(item.id);
-    setFormData({
-      type: item.type,
-      name: item.name,
-      room: item.room,
-      capacity: item.capacity,
-      status: item.status
-    });
-    setIsModalOpen(true);
-  };
-
-  // บันทึกข้อมูล (ทั้งเพิ่มใหม่และแก้ไข)
-  const handleSave = (e) => {
-    e.preventDefault();
-    if (!formData.name || !formData.room) return alert('กรุณากรอกข้อมูลให้ครบถ้วนครับ');
-
-    const statusColor = formData.status === 'เปิดให้บริการ' ? '#8BE3A8' : '#FFB3B3';
-
-    if (isEditMode) {
-      // โหมดแก้ไข
-      setFacilities(facilities.map(item => 
-        item.id === currentId ? { ...item, ...formData, statusColor } : item
-      ));
-      alert('แก้ไขข้อมูลสถานที่สำเร็จ');
-    } else {
-      // โหมดเพิ่มใหม่
-      const newFacility = {
-        id: Date.now(),
-        ...formData,
-        statusColor
-      };
-      setFacilities([...facilities, newFacility]);
-      alert('เพิ่มสถานที่ใหม่สำเร็จ');
-    }
-    setIsModalOpen(false);
-  };
-
-  // สลับสถานะ เปิด/ปิดปรับปรุง แบบด่วน (Quick Toggle)
-  const toggleStatus = (id) => {
-    setFacilities(facilities.map(item => {
-      if (item.id === id) {
-        const nextStatus = item.status === 'เปิดให้บริการ' ? 'ปิดปรับปรุง' : 'เปิดให้บริการ';
-        const nextColor = nextStatus === 'เปิดให้บริการ' ? '#8BE3A8' : '#FFB3B3';
-        return { ...item, status: nextStatus, statusColor: nextColor };
-      }
-      return item;
-    }));
-  };
-
-  // ลบสถานที่
-  const handleDelete = (id, roomName) => {
-    if (window.confirm(`คุณต้องการลบ "${roomName}" ใช่หรือไม่? (ไม่สามารถกู้คืนได้)`)) {
-      setFacilities(facilities.filter(item => item.id !== id));
-      alert('ลบข้อมูลเรียบร้อยแล้ว');
-    }
-  };
-
   return (
-    <div className="admin-dashboard-container">
+    <div className="admin-dashboard-container" style={{ padding: '2rem', backgroundColor: '#EEF0F8', minHeight: '100vh' }}>
+      
+      {/* ส่วนหัวข้อหลัก */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div>
-          <h1 className="admin-page-title">⚙️ จัดการสถานที่และห้องใช้งาน</h1>
-          <p className="admin-page-subtitle" style={{ marginBottom: 0 }}>เพิ่ม, ลบ, แก้ไขข้อมูล หรือเปิด/ปิดปรับปรุงห้องจองต่างๆ ในระบบ</p>
+          <h1 className="admin-page-title" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', display: 'flex', alignItems: 'center', gap: '10px', margin: 0 }}>
+            <i className="fa-solid fa-gear" style={{ color: '#666' }}></i> จัดการสถานที่และห้องใช้งาน
+          </h1>
+          <p className="admin-page-subtitle" style={{ color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
+            เปิด/ปิดสลับสถานะปรับปรุงห้องจองและสนามย่อยต่างๆ ในระบบ
+          </p>
         </div>
+      </div>
+
+      {/* 👉 ชุดกล่องเครื่องมือฟิลเตอร์ (Filter Bar Section) */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         
-        {/* ปุ่มเพิ่มสถานที่ใหม่ */}
-        <button className="admin-add-btn" onClick={openAddModal}>
-          <i className="fa-solid fa-plus"></i> เพิ่มสถานที่ใหม่
-        </button>
-      </div>
-
-      {/* --- ตารางรายชื่อสถานที่ --- */}
-      <div className="booking-table-container">
-        <div className="booking-table-header">
-          <div style={{ flex: 2, textAlign: 'center' }}>การจัดการ / เครื่องมือ</div>
-          <div style={{ flex: 1.5, textAlign: 'center' }}>สถานะระบบ</div>
-          <div style={{ flex: 1.2, textAlign: 'center' }}>ความจุคน</div>
-          <div style={{ flex: 1.2, textAlign: 'center' }}>ประเภท</div>
-          <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem' }}>ชื่อตึก / สถานที่หลัก</div>
-          <div style={{ flex: 3, textAlign: 'left', paddingLeft: '1rem' }}>ชื่อห้อง / สนามย่อย</div>
+        {/* ฝั่งซ้าย: แท็บกดเลือกประเภทความกว้างพอดีมือ */}
+        <div className="tab-switcher" style={{ display: 'flex', gap: '8px', margin: 0, backgroundColor: '#E0E3EB', padding: '4px', borderRadius: '8px' }}>
+          {['All', 'Sport', 'Karaoke', 'Study'].map((type) => (
+            <button
+              key={type}
+              className={`tab-btn ${selectedType === type ? 'active' : ''}`}
+              onClick={() => setSelectedType(type)}
+              style={{
+                padding: '0.5rem 1.2rem',
+                borderRadius: '6px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                backgroundColor: selectedType === type ? '#FFF' : 'transparent',
+                color: selectedType === type ? '#333' : '#666',
+                boxShadow: selectedType === type ? '0 2px 6px rgba(0,0,0,0.1)' : 'none',
+                transition: 'all 0.2s'
+              }}
+            >
+              {type === 'All' ? '🌐 ทั้งหมด' : type}
+            </button>
+          ))}
         </div>
 
-        {facilities.map(item => (
-          <div key={item.id} className="booking-table-row" style={{ cursor: 'default' }}>
-            
-            {/* ปุ่มเครื่องมือ Manage */}
-            <div style={{ flex: 2, textAlign: 'center', display: 'flex', gap: '6px', justifyContent: 'center' }}>
-              <button className="admin-action-btn edit" onClick={() => openEditModal(item)} title="แก้ไขข้อมูล">
-                <i className="fa-solid fa-pen-to-square"></i> แก้ไข
-              </button>
-              
-              <button 
-                className="admin-action-btn toggle" 
-                style={{ backgroundColor: item.status === 'เปิดให้บริการ' ? '#F5A623' : '#1E8E3E' }}
-                onClick={() => toggleStatus(item.id)}
-                title="สลับสถานะเปิด/ปิดปรับปรุง"
-              >
-                {item.status === 'เปิดให้บริการ' ? 'ปิดปรับปรุง' : 'เปิดใช้งาน'}
-              </button>
-
-              <button className="admin-action-btn delete" onClick={() => handleDelete(item.id, item.room)} title="ลบสถานที่">
-                <i className="fa-solid fa-trash"></i> ลบ
-              </button>
-            </div>
-
-            {/* สถานะ */}
-            <div style={{ flex: 1.5, textAlign: 'center' }}>
-              <span className="status-badge" style={{ backgroundColor: item.statusColor }}>
-                {item.status}
-              </span>
-            </div>
-
-            <div style={{ flex: 1.2, textAlign: 'center' }}>{item.capacity}</div>
-            <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold' }}>{item.type}</div>
-            <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem' }}>{item.name}</div>
-            <div style={{ flex: 3, textAlign: 'left', paddingLeft: '1rem' }}>
-              <strong>{item.room}</strong>
-            </div>
-
-          </div>
-        ))}
+        {/* ฝั่งขวา: ช่องพิมพ์ค้นหาอัจฉริยะ (Search Input) */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '350px' }}>
+          <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }}></i>
+          <input
+            type="text"
+            placeholder="🔍 พิมพ์ค้นหาตึก หรือชื่อห้องย่อย..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '0.6rem 1rem 0.6rem 2.3rem',
+              borderRadius: '8px',
+              border: '1px solid #CCC',
+              fontSize: '0.95rem',
+              outline: 'none',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+              boxSet: 'border-box'
+            }}
+          />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm('')} 
+              style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'none', cursor: 'pointer', color: '#999', fontSize: '1.1rem' }}
+            >
+              ×
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* ========================================== */}
-      {/* MODAL POPUP: ฟอร์ม เพิ่ม / แก้ไข สถานที่ */}
-      {/* ========================================== */}
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content" style={{ maxWidth: '500px' }}>
-            <h2 style={{ marginBottom: '1.5rem', color: '#333' }}>
-              {isEditMode ? '📝 แก้ไขข้อมูลสถานที่' : '➕ เพิ่มสถานที่ใหม่'}
-            </h2>
-            
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem', textAlign: 'left' }}>
-              
-              <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.4rem' }}>ประเภทสถานที่:</label>
-                <select 
-                  className="report-textarea" style={{ height: '40px', padding: '0 0.5rem' }}
-                  value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                >
-                  <option value="Study">Study (ห้องติว/ห้องสมุด)</option>
-                  <option value="Karaoke">Karaoke (ห้องคาราโอเกะ)</option>
-                  <option value="Music">Music (ห้องซ้อมดนตรี)</option>
-                  <option value="Sport">Sport (สนามย่อยกีฬา)</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.4rem' }}>ชื่อตึก / สถานที่หลัก:</label>
-                <input 
-                  type="text" className="report-textarea" style={{ height: '40px' }}
-                  placeholder="เช่น ตึกป๋วยฯ, Interzone, Melody Sphere"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.4rem' }}>ชื่อห้อง / สนามย่อย:</label>
-                <input 
-                  type="text" className="report-textarea" style={{ height: '40px' }}
-                  placeholder="เช่น Study Room 05, Karaoke Room size L"
-                  value={formData.room}
-                  onChange={(e) => setFormData({ ...formData, room: e.target.value })}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.4rem' }}>ความจุจำนวนคน:</label>
-                <input 
-                  type="text" className="report-textarea" style={{ height: '40px' }}
-                  placeholder="เช่น 2-4 คน, 5-10 คน"
-                  value={formData.capacity}
-                  onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                />
-              </div>
-
-              <div>
-                <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '0.4rem' }}>สถานะเริ่มต้น:</label>
-                <select 
-                  className="report-textarea" style={{ height: '40px', padding: '0 0.5rem' }}
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                >
-                  <option value="เปิดให้บริการ">เปิดให้บริการ</option>
-                  <option value="ปิดปรับปรุง">ปิดปรับปรุง (ซ่อนชั่วคราว)</option>
-                </select>
-              </div>
-
-              <div className="modal-actions" style={{ marginTop: '1rem' }}>
-                <button type="submit" className="btn-confirm" style={{ backgroundColor: '#1E8E3E' }}>บันทึกข้อมูล</button>
-                <button type="button" className="btn-cancel" onClick={() => setIsModalOpen(false)}>ยกเลิก</button>
-              </div>
-
-            </form>
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '5rem', color: '#666' }}>
+          <i className="fa-solid fa-spinner fa-spin" style={{ fontSize: '3rem', marginBottom: '1rem' }}></i>
+          <p style={{ fontSize: '1.2rem' }}>กำลังดึงข้อมูลระบบสถานที่...</p>
+        </div>
+      ) : (
+        /* --- ตารางรายชื่อสถานที่ --- */
+        <div className="booking-table-container" style={{ backgroundColor: '#FFF', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+          
+          {/* หัวตาราง */}
+          <div className="booking-table-header" style={{ backgroundColor: '#F8F9FA', borderBottom: '2px solid #EEE', padding: '1rem', fontWeight: 'bold', display: 'flex', color: '#444' }}>
+            <div style={{ flex: 2.0, textAlign: 'center' }}>การจัดการสถานะระบบ</div>
+            <div style={{ flex: 1.5, textAlign: 'center' }}>สถานะปัจจุบัน</div>
+            <div style={{ flex: 1.5, textAlign: 'center' }}>ประเภท</div>
+            <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem' }}>ชื่อตึก / สถานที่หลัก</div>
+            <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem' }}>ชื่อห้อง / สนามย่อย</div>
           </div>
+
+          {/* เรนเดอร์แถวข้อมูลจากคิวฟิลเตอร์ (filteredFacilities) */}
+          {filteredFacilities && filteredFacilities.length > 0 ? (
+            filteredFacilities.map((item) => (
+              <div key={item._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1.2rem 1rem', borderBottom: '1px solid #EEE', cursor: 'default' }}>
+                
+                {/* 1. ปุ่มสลับสถานะด่วน */}
+                <div style={{ flex: 2.0, textAlign: 'center' }}>
+                  <button
+                    onClick={() => handleToggleStatus(item._id, item.status)}
+                    className="cancel-booking-btn"
+                    style={{
+                      backgroundColor: item.status === 'เปิดให้บริการ' ? '#E31B23' : '#1E8E3E',
+                      borderColor: item.status === 'เปิดให้บริการ' ? '#E31B23' : '#1E8E3E',
+                      color: '#FFF',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      transition: 'all 0.2s',
+                      width: '140px'
+                    }}
+                  >
+                    {item.status === 'เปิดให้บริการ' ? '🛑 สั่งปิดปรับปรุง' : '✅ สั่งเปิดบริการ'}
+                  </button>
+                </div>
+
+                {/* 2. ป้ายไฟสีบอกสถานะระบบปัจจุบัน */}
+                <div style={{ flex: 1.5, textAlign: 'center' }}>
+                  <span 
+                    className="status-badge" 
+                    style={{ 
+                      backgroundColor: item.status === 'เปิดให้บริการ' ? '#8BE3A8' : '#FFB3B3', 
+                      color: item.status === 'เปิดให้บริการ' ? '#0E431F' : '#610F0F',
+                      padding: '0.4rem 0.8rem',
+                      borderRadius: '20px',
+                      fontWeight: 'bold',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+
+                {/* 3. ประเภทหมวดหมู่ */}
+                <div style={{ flex: 1.5, textAlign: 'center', fontWeight: 'bold', color: '#555' }}>
+                  {item.type}
+                </div>
+
+                {/* 4. ชื่อสถานที่หลัก */}
+                <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem', color: '#333' }}>
+                  {item.name}
+                </div>
+
+                {/* 5. ชื่อห้อง/สนามย่อย */}
+                <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem', color: '#0056B3' }}>
+                  <strong>{item.room}</strong>
+                </div>
+
+              </div>
+            ))
+          ) : (
+            <div style={{ textAlign: 'center', padding: '4rem', color: '#999' }}>
+              <i className="fa-solid fa-folder-open" style={{ fontSize: '3rem', marginBottom: '1rem' }}></i>
+              <p>ไม่พบรายชื่อสถานที่ตามเงื่อนไขที่ค้นหา</p>
+            </div>
+          )}
         </div>
       )}
-
     </div>
   );
 }

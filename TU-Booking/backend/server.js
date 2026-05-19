@@ -2,30 +2,41 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import authRoute from './routes/authRoute.js';
-import facilityRoutes from './routes/facilityRoutes.js'; // 👉 1. นำเข้าท่อสถานที่ที่เราเพิ่งสร้าง
+import facilityRoutes from './routes/facilityRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js'; 
+import rewardRoutes from './routes/rewardRoutes.js';   
+import redeemRoutes from './routes/redeemRoutes.js';
+import announcementRoutes from './routes/announcementRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
+// 👉 🎯 [จุดที่เพิ่มใหม่] นำเข้าท่อเราเตอร์สำหรับคำนวณสถิติ Dashboard
+import dashboardRoutes from './routes/dashboardRoutes.js';
 
 const app = express();
 const port = 4000;
 
-// --- 1. Middleware ---
 app.use(cors()); 
 app.use(express.json()); 
 
-// --- 2. ตั้งค่าเชื่อมต่อไปยัง MongoDB Database ---
 mongoose.connect('mongodb://127.0.0.1:27017/tu_booking')
-    .then(() => console.log('✅ เชื่อมต่อฐานข้อมูล MongoDB Compass สำเร็จ!'))
-    .catch((err) => console.error('❌ เกิดข้อผิดพลาดในการเชื่อมต่อ MongoDB:', err));
+    .then(() => console.log('✅ เชื่อมต่อ MongoDB สำเร็จ!'))
+    .catch((err) => console.error('❌ เชื่อมต่อ MongoDB ล้มเหลว:', err));
 
-// --- 3. Routes ---
-app.use('/api', authRoute); // ท่อสำหรับระบบ Login ของมึง (มีอยู่แล้ว)
-app.use('/api/facilities', facilityRoutes); // 👉 2. เสียบปลั๊กท่อ Facility ตรงนี้เลยเพื่อน!
+// Routes หลักของระบบมึง
+app.use('/api', authRoute);
+app.use('/api/facilities', facilityRoutes);
+app.use('/api/bookings', bookingRoutes); 
+app.use('/api/rewards', rewardRoutes);   
+app.use('/api/redeem', redeemRoutes);
+app.use('/api/announcements', announcementRoutes);
+app.use('/api/reports', reportRoutes);
+
+// 👉 🎯 [จุดที่เพิ่มใหม่] เสียบปลั๊กเปิดใช้งานท่อประมวลผล Data Analytics หน้า Dashboard จริง
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/', (req, res) => {
-    res.send('TU-Booking Backend is running with MongoDB!');
+    res.send('TU-Booking Backend is running!');
 });
 
-// --- 4. Start Server ---
 app.listen(port, () => {
-    console.log(`🚀 Server is running on http://localhost:${port}`);
-    console.log(`📡 Ready to receive requests from Frontend`);
+    console.log(`🚀 Server running on http://localhost:${port}`);
 });
