@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom';
 function AdminNavbar() {
   const location = useLocation();
 
-  // 🛠️ รายการเมนูสำหรับ Admin (สอดคล้องกับ Requirement ทั้งหมด)
   const adminMenus = [
     { name: 'Dashboard สถิติ', icon: 'fa-solid fa-chart-line', path: '/admin-dashboard' },
     { name: 'จัดการสถานที่/ห้อง', icon: 'fa-solid fa-sliders', path: '/admin-facilities' },
@@ -23,18 +22,16 @@ function AdminNavbar() {
   return (
     <nav className="navbar-container admin-navbar-theme" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       
-      {/* ส่วนหัวโลโก้แบบ Admin */}
       <div className="logo-section" style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '1.5rem' }}>
         <div className="logo-circle" style={{ backgroundColor: '#2C3E50' }}>
           <span className="logo-text" style={{ color: '#E74C3C' }}>AD</span>
         </div>
         <div>
-          <h2 className="brand-name" style={{ fontSize: '1.1rem', margin: 0 }}>TU-MANAGEMENT</h2>
+          <h2 className="brand-name" style={{ fontSize: '1.1rem', margin: 0 }}>TU-ฺBooking</h2>
           <span style={{ fontSize: '0.75rem', color: '#E74C3C', fontWeight: 'bold', letterSpacing: '1px' }}>ADMIN PANEL</span>
         </div>
       </div>
 
-      {/* รายการเมนูหลักของแอดมิน */}
       <div className="menu-list" style={{ flex: 1, marginTop: '1.5rem' }}>
         {adminMenus.map((menu) => {
           const isActive = location.pathname === menu.path;
@@ -53,10 +50,8 @@ function AdminNavbar() {
         })}
       </div>
 
-      {/* ส่วนท้าย: ปุ่มสลับกลับไปหน้า User หรือ ออกจากระบบ */}
       <div className="nav-footer" style={{ padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         
-        {/* แอบทำปุ่มสลับบทบาท เพื่อให้ง่ายเวลาเปิดพรีเซนต์งานอาจารย์ */}
         <Link to="/" style={{ textDecoration: 'none' }}>
           <button style={{
             width: '100%', padding: '0.6rem', backgroundColor: '#34495E', border: 'none',

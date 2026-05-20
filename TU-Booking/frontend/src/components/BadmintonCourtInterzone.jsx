@@ -11,11 +11,9 @@ function BadmintonInterzone({ onBack, user }) {
      new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
-  // 1. แยกฟังก์ชัน fetch ออกมาเป็น useCallback เพื่อเรียกซ้ำได้จากทุกที่
   const fetchBadmintonInterzone = useCallback(async () => {
     try {
       setLoading(true);
-      // ส่ง date ไปให้ backend เช็คสถานะว่างจริงจากตาราง bookings
       const response = await fetch(`http://localhost:4000/api/facilities?type=Sport&date=${selectedDate}`);
       const data = await response.json();
 
@@ -30,7 +28,7 @@ function BadmintonInterzone({ onBack, user }) {
         type: court.type, 
         slots: court.slots.map(slot => ({
           time: slot.time,
-          isAvailable: slot.isAvailable // 👉 รับค่า boolean ที่คำนวณมาแล้วจากหลังบ้าน
+          isAvailable: slot.isAvailable
         }))
       }));
 
@@ -46,43 +44,36 @@ function BadmintonInterzone({ onBack, user }) {
     fetchBadmintonInterzone();
   }, [fetchBadmintonInterzone]);
 
-  // 👉 อัปเดตฟังก์ชันดักการกดสล็อตเวลาที่ผ่านมาแล้ว ให้ยืดหยุ่นและปลอดภัยจากบั๊กเรื่องปี
   const handleSlotClick = (courtId, courtName, time, isAvailable) => {
-    // 1. เช็คว่ามีคนจองตัดหน้าไปแล้วหรือยัง
     if (!isAvailable) {
-      alert("❌ ช่วงเวลานี้ถูกจองไปแล้วครับ!");
+      alert("⚠️ ช่วงเวลานี้ถูกจองไปแล้ว");
       return;
     }
 
-    // 2. 🛡️ เช็คว่าสล็อตเวลานี้เลยเวลาปัจจุบันไปหรือยัง
     try {
       const [d, m, y] = selectedDate.split('/');
       let year = parseInt(y);
       
-      // แปลงปี พ.ศ. ให้เป็น ค.ศ. สำหรับใช้ใน Object Date ของ JavaScript (ปรับเงื่อนไขให้รัดกุม)
       if (year < 100) {
-        year = year + 2500 - 543; // กรณีมาเป็นปี 2 หลัก เช่น 69 -> 2569 -> 2026
+        year = year + 2500 - 543;
       } else if (year > 2500) {
-        year = year - 543; // กรณีมาเป็นปี พ.ศ. 4 หลัก เช่น 2569 -> 2026
+        year = year - 543;
       }
 
-      // แปลงเวลาเริ่มต้น (เช่น "16:00 - 17:00" ดึงออกมาแค่ "16:00")
       const startTime = time.split('-')[0].trim();
       const [hh, mm] = startTime.split(':');
 
       const slotDateTime = new Date(year, parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm));
       const now = new Date();
 
-      // ถ้าเวลาสล็อตน้อยกว่าเวลาปัจจุบัน = อดีต (บล็อกทันที)
       if (slotDateTime < now) {
-        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้วครับเพื่อน!");
+        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้ว!");
         return; 
       }
     } catch (error) {
       console.error("Error parsing date/time validation:", error);
     }
 
-    // ถ้าผ่านเงื่อนไขทั้งหมด ค่อยเปิด Modal ยืนยันการจอง
     setSelectedBooking({ courtId, courtName, time, date: selectedDate });
     setIsModalOpen(true);
   };
@@ -92,9 +83,9 @@ function BadmintonInterzone({ onBack, user }) {
     const currentCourt = courts.find(c => c.id === courtId);
 
     const bookingData = {
-      studentId: user?.studentId || "6609650582",
+      studentId: user?.studentId,
       facilityId: courtId,      
-      facilityName: currentCourt?.title || "Badminton Court Interzone", 
+      facilityName: currentCourt?.title, 
       roomName: currentCourt?.name || courtName,                     
       bookingDate: date,       
       timeSlot: time,
@@ -112,7 +103,6 @@ function BadmintonInterzone({ onBack, user }) {
 
       if (response.ok) {
         alert('🎉 จองสำเร็จ!');
-        // 👉 สั่ง Refresh ข้อมูลใหม่ทันที สีปุ่มจะเปลี่ยนเป็นแดงให้เองโดยไม่ต้องรีหน้า
         fetchBadmintonInterzone(); 
       } else {
         alert(result.message || 'เกิดข้อผิดพลาดในการจอง');

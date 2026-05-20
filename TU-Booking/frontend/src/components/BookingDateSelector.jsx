@@ -4,7 +4,6 @@ function BookingDateSelector({ selectedDate, onDateChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // คำนวณวันที่วันนี้ และ พรุ่งนี้
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -25,10 +24,8 @@ function BookingDateSelector({ selectedDate, onDateChange }) {
     { label: `พรุ่งนี้ (${tomorrowStr})`, value: tomorrowStr }
   ];
 
-  // หา Label ปัจจุบันมาแสดงผล
   const currentLabel = options.find(opt => opt.value === selectedDate)?.label || options[0].label;
 
-  // ฟังก์ชันคลิกพื้นที่อื่นแล้วให้ Dropdown ปิดอัตโนมัติ
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -41,7 +38,7 @@ function BookingDateSelector({ selectedDate, onDateChange }) {
 
   const handleSelect = (value) => {
     onDateChange(value);
-    setIsOpen(false); // เลือกเสร็จให้พับเก็บ
+    setIsOpen(false);
   };
 
   return (
@@ -50,12 +47,10 @@ function BookingDateSelector({ selectedDate, onDateChange }) {
         วันที่จอง
       </span>
       
-      {/* Container หลักของ Custom Dropdown */}
       <div 
         ref={dropdownRef}
         style={{ position: 'relative', display: 'inline-block', textAlign: 'left' }}
       >
-        {/* ปุ่มที่กดเพื่อกางเมนู */}
         <div 
           onClick={() => setIsOpen(!isOpen)}
           style={{ 
@@ -81,7 +76,6 @@ function BookingDateSelector({ selectedDate, onDateChange }) {
           <i className={`fa-solid fa-chevron-${isOpen ? 'up' : 'down'}`} style={{ marginLeft: '1rem', color: '#999', fontSize: '0.8rem' }}></i>
         </div>
 
-        {/* เมนู Dropdown ที่จะโผล่มาตอนกด (แอบแทรกสไตล์ Hover ในนี้เลย) */}
         {isOpen && (
           <div 
             style={{
@@ -97,7 +91,6 @@ function BookingDateSelector({ selectedDate, onDateChange }) {
               border: '1px solid #eee'
             }}
           >
-            {/* ฝัง CSS สำหรับ Hover Effect เพื่อความสวยงาม */}
             <style>
               {`
                 .date-option-item {

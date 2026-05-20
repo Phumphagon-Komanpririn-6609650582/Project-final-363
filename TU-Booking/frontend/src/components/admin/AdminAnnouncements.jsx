@@ -4,11 +4,10 @@ function AdminAnnouncements() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // State สำหรับ Modal เพิ่มประกาศใหม่
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ type: 'info', message: '' });
 
-  // 🎯 ฟังก์ชันดึงข่าวสารอัปเดตล่าสุดจากฐานข้อมูลจริง
+  //ฟังก์ชันดึงข่าวสารอัปเดตล่าสุดจากฐานข้อมูล
   const fetchAnnouncements = async () => {
     try {
       setLoading(true);
@@ -18,7 +17,7 @@ function AdminAnnouncements() {
         setAnnouncements(data);
       }
     } catch (error) {
-      console.error('❌ โหลดข้อมูลประกาศล้มเหลว:', error);
+      console.error('❌ โหลดประกาศล้มเหลว:', error);
     } finally {
       setLoading(false);
     }
@@ -28,7 +27,7 @@ function AdminAnnouncements() {
     fetchAnnouncements();
   }, []);
 
-  // 🎯 ฟังก์ชันวิเคราะห์ข้อมูลสไตล์ป้ายตามค่าประเภทที่เก็บใน MongoDB
+  //ฟังก์ชันสไตล์ป้ายตามประเภท
   const getAnnouncementMeta = (type) => {
     switch (type) {
       case 'warning':
@@ -40,7 +39,7 @@ function AdminAnnouncements() {
     }
   };
 
-  // 🗑️ ฟังก์ชันลบประกาศออกจาก MongoDB จริง
+  //ฟังก์ชันลบประกาศออกจากDB
   const handleDelete = async (id) => {
     if (window.confirm('คุณต้องการลบประกาศนี้ออกจากระบบใช่หรือไม่?')) {
       try {
@@ -49,7 +48,7 @@ function AdminAnnouncements() {
         });
         if (response.ok) {
           alert('🗑️ ลบประกาศข่าวสารออกจากระบบเรียบร้อยแล้ว!');
-          fetchAnnouncements(); // โหลดตารางใหม่ทันที
+          fetchAnnouncements();
         } else {
           alert('ไม่สามารถลบประกาศได้');
         }
@@ -60,10 +59,10 @@ function AdminAnnouncements() {
     }
   };
 
-  // 📝 ฟังก์ชันบันทึกประกาศใหม่เข้าฐานข้อมูลจริง
+  //บันทึกประกาศใหม่เข้าฐานข้อมูล
   const handleSave = async (e) => {
     e.preventDefault();
-    if (!formData.message.trim()) return alert('กรุณาระบุข้อความประกาศด้วยครับเพื่อน');
+    if (!formData.message.trim()) return alert('กรุณาระบุข้อความประกาศ');
 
     try {
       const response = await fetch('http://localhost:4000/api/announcements/create', {
@@ -76,16 +75,16 @@ function AdminAnnouncements() {
       });
 
       if (response.ok) {
-        alert('📢 สร้างประกาศข่าวสารเรียบร้อย! ระบบจะส่งข้อมูลไปแสดงที่หน้านักศึกษาทันที');
+        alert('📢 สร้างประกาศข่าวสารเรียบร้อย!');
         setIsModalOpen(false);
         setFormData({ type: 'info', message: '' });
-        fetchAnnouncements(); // อัปเดตรีเฟรชหน้าจอหลัก
+        fetchAnnouncements();
       } else {
         alert('สร้างประกาศล้มเหลว');
       }
     } catch (error) {
       console.error(error);
-      alert('เชื่อมต่อหลังบ้านล้มเหลว');
+      alert('การเชื่อมต่อล้มเหลว');
     }
   };
 
@@ -94,16 +93,15 @@ function AdminAnnouncements() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div>
           <h1 className="admin-page-title" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', margin: 0 }}>📢 จัดการประกาศข่าวสาร</h1>
-          <p className="admin-page-subtitle" style={{ color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>สร้างข้อความประกาศเพื่อแสดงผลที่หน้า "ประกาศข่าวสาร" ของผู้ใช้งาน</p>
+          <p className="admin-page-subtitle" style={{ color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>สร้างข้อความประกาศ</p>
         </div>
         
-        {/* ปุ่มสร้างประกาศใหม่ */}
+      
         <button className="admin-add-btn" onClick={() => setIsModalOpen(true)} style={{ backgroundColor: '#1E8E3E', color: '#FFF', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <i className="fa-solid fa-bullhorn"></i> สร้างประกาศใหม่
         </button>
       </div>
 
-      {/* --- ตารางรายการประกาศ --- */}
       <div className="booking-table-container" style={{ backgroundColor: '#FFF', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
         <div className="booking-table-header" style={{ display: 'flex', fontWeight: 'bold', padding: '1rem', backgroundColor: '#F8F9FA', borderBottom: '2px solid #EEE', color: '#444' }}>
           <div style={{ flex: 1, textAlign: 'center' }}>จัดการ</div>
@@ -120,7 +118,6 @@ function AdminAnnouncements() {
             return (
               <div key={item._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1rem', borderBottom: '1px solid #EEE', cursor: 'default' }}>
                 
-                {/* ปุ่มลบ */}
                 <div style={{ flex: 1, textAlign: 'center' }}>
                   <button className="admin-action-btn delete" onClick={() => handleDelete(item._id)} title="ลบประกาศ" style={{ backgroundColor: '#E31B23', color: '#FFF', border: 'none', padding: '0.35rem 0.7rem', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem' }}>
                     <i className="fa-solid fa-trash"></i> ลบ
@@ -149,9 +146,7 @@ function AdminAnnouncements() {
         )}
       </div>
 
-      {/* ========================================== */}
-      {/* MODAL POPUP: ฟอร์มสร้างประกาศใหม่ */}
-      {/* ========================================== */}
+    
       {isModalOpen && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div className="modal-content" style={{ maxWidth: '500px', backgroundColor: '#FFF', padding: '2rem', borderRadius: '8px', width: '100%' }} onClick={(e) => e.stopPropagation()}>
@@ -169,9 +164,9 @@ function AdminAnnouncements() {
                   value={formData.type}
                   onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                 >
-                  <option value="info">ข่าวสารทั่วไป (สีฟ้า)</option>
-                  <option value="success">ข่าวดี / อัปเดต (สีเขียว)</option>
-                  <option value="warning">ประกาศเตือน / กฎระเบียบ (สีส้ม)</option>
+                  <option value="info">ข่าวสารทั่วไป</option>
+                  <option value="success">ข่าวดี / อัปเดต</option>
+                  <option value="warning">ประกาศเตือน / กฎระเบียบ</option>
                 </select>
               </div>
 

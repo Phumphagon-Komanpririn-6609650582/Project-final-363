@@ -4,11 +4,10 @@ function AdminFacilities() {
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 👉 เพิ่ม State สำหรับทำระบบ Filter ค้นหา
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedType, setSelectedType] = useState('All'); // ค่าเริ่มต้นโชว์ทั้งหมด
+  const [selectedType, setSelectedType] = useState('All');
 
-  // ฟังก์ชันดึงข้อมูลจากหลังบ้านพาร์ท Admin
+  // ฟังก์ชันดึงข้อมูลจากหลังบ้านAdmin
   const fetchAdminFacilities = async () => {
     try {
       setLoading(true);
@@ -36,7 +35,7 @@ function AdminFacilities() {
         setFacilities(sanitizedData);
       }
     } catch (error) {
-      console.error('❌ ดึงข้อมูลสถานที่หลังบ้านล้มเหลว:', error);
+      console.error('❌ ดึงข้อมูลสถานที่ล้มเหลว:', error);
     } finally {
       setLoading(false);
     }
@@ -46,7 +45,7 @@ function AdminFacilities() {
     fetchAdminFacilities();
   }, []);
 
-  // ฟังก์ชันยิง API สลับสถานะระบบในฐานข้อมูล
+  // ฟังก์ชันสลับสถานะในฐานข้อมูล
   const handleToggleStatus = async (id, currentStatus) => {
     const actionText = currentStatus === 'เปิดให้บริการ' ? 'ปิดปรับปรุงระบบ' : 'เปิดให้บริการตามปกติ';
     
@@ -68,12 +67,11 @@ function AdminFacilities() {
     }
   };
 
-  // 👉 3. ตรรกะประมวลผลการกรองข้อมูล (Filter Logic) ยิงสดบนหน้าจอแบบ Realtime
+
   const filteredFacilities = facilities.filter(item => {
-    // กรองด้วยประเภทแท็บ (All, Sport, Karaoke, Study)
+
     const matchesType = selectedType === 'All' || item.type === selectedType;
     
-    // กรองด้วยคำค้นหา (เช็คทั้งชื่อสถานที่หลัก และชื่อห้องย่อย)
     const matchesSearch = 
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.room.toLowerCase().includes(searchTerm.toLowerCase());
@@ -84,7 +82,6 @@ function AdminFacilities() {
   return (
     <div className="admin-dashboard-container" style={{ padding: '2rem', backgroundColor: '#EEF0F8', minHeight: '100vh' }}>
       
-      {/* ส่วนหัวข้อหลัก */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div>
           <h1 className="admin-page-title" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', display: 'flex', alignItems: 'center', gap: '10px', margin: 0 }}>
@@ -96,10 +93,8 @@ function AdminFacilities() {
         </div>
       </div>
 
-      {/* 👉 ชุดกล่องเครื่องมือฟิลเตอร์ (Filter Bar Section) */}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         
-        {/* ฝั่งซ้าย: แท็บกดเลือกประเภทความกว้างพอดีมือ */}
         <div className="tab-switcher" style={{ display: 'flex', gap: '8px', margin: 0, backgroundColor: '#E0E3EB', padding: '4px', borderRadius: '8px' }}>
           {['All', 'Sport', 'Karaoke', 'Study'].map((type) => (
             <button
@@ -123,7 +118,6 @@ function AdminFacilities() {
           ))}
         </div>
 
-        {/* ฝั่งขวา: ช่องพิมพ์ค้นหาอัจฉริยะ (Search Input) */}
         <div style={{ position: 'relative', width: '100%', maxWidth: '350px' }}>
           <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }}></i>
           <input
@@ -162,7 +156,6 @@ function AdminFacilities() {
         /* --- ตารางรายชื่อสถานที่ --- */
         <div className="booking-table-container" style={{ backgroundColor: '#FFF', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           
-          {/* หัวตาราง */}
           <div className="booking-table-header" style={{ backgroundColor: '#F8F9FA', borderBottom: '2px solid #EEE', padding: '1rem', fontWeight: 'bold', display: 'flex', color: '#444' }}>
             <div style={{ flex: 2.0, textAlign: 'center' }}>การจัดการสถานะระบบ</div>
             <div style={{ flex: 1.5, textAlign: 'center' }}>สถานะปัจจุบัน</div>
@@ -171,12 +164,10 @@ function AdminFacilities() {
             <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem' }}>ชื่อห้อง / สนามย่อย</div>
           </div>
 
-          {/* เรนเดอร์แถวข้อมูลจากคิวฟิลเตอร์ (filteredFacilities) */}
           {filteredFacilities && filteredFacilities.length > 0 ? (
             filteredFacilities.map((item) => (
               <div key={item._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1.2rem 1rem', borderBottom: '1px solid #EEE', cursor: 'default' }}>
                 
-                {/* 1. ปุ่มสลับสถานะด่วน */}
                 <div style={{ flex: 2.0, textAlign: 'center' }}>
                   <button
                     onClick={() => handleToggleStatus(item._id, item.status)}
@@ -197,7 +188,6 @@ function AdminFacilities() {
                   </button>
                 </div>
 
-                {/* 2. ป้ายไฟสีบอกสถานะระบบปัจจุบัน */}
                 <div style={{ flex: 1.5, textAlign: 'center' }}>
                   <span 
                     className="status-badge" 
@@ -214,17 +204,14 @@ function AdminFacilities() {
                   </span>
                 </div>
 
-                {/* 3. ประเภทหมวดหมู่ */}
                 <div style={{ flex: 1.5, textAlign: 'center', fontWeight: 'bold', color: '#555' }}>
                   {item.type}
                 </div>
 
-                {/* 4. ชื่อสถานที่หลัก */}
                 <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem', color: '#333' }}>
                   {item.name}
                 </div>
 
-                {/* 5. ชื่อห้อง/สนามย่อย */}
                 <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem', color: '#0056B3' }}>
                   <strong>{item.room}</strong>
                 </div>

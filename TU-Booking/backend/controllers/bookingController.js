@@ -1,30 +1,28 @@
 import Booking from '../models/Booking.js';
-import User from '../models/User.js'; // 👉 นำเข้า Model User มาเช็คสิทธิ์โดนแบน
+import User from '../models/User.js'; 
 
 export const createBooking = async (req, res) => {
   try {
     const { studentId, facilityId, facilityName, roomName, bookingDate, timeSlot, type } = req.body;
 
-    // 🛡️ จุดที่ 1: ตรวจสอบและดักสิทธิ์การโดนแบนสะสมครบ 3 ครั้งของนักศึกษา (No-show Lock)
+    // แบนสะสมครบ 3 ครั้งของนักศึกษา
     const user = await User.findOne({ studentId });
     
     if (user && user.status === 'ถูกระงับสิทธิ์') {
       if (user.banUntil) {
-        // แกะตัวแปร String วันปลดแบนแปลงกลับเป็น Date Object เพื่อเทียบเวลาปัจจุบัน
         const [banD, banM, banY] = user.banUntil.split('/');
         let calculatedBanYear = parseInt(banY);
-        if (calculatedBanYear > 2500) calculatedBanYear = calculatedBanYear - 543; // แปลง พ.ศ. กลับเป็น ค.ศ.
+        if (calculatedBanYear > 2500) calculatedBanYear = calculatedBanYear - 543;
 
         const banDateTime = new Date(calculatedBanYear, parseInt(banM) - 1, parseInt(banD), 23, 59, 59);
         const now = new Date();
 
         if (now < banDateTime) {
-          // 🛑 ยังไม่พ้นกำหนดแบน 7 วัน ยิงบล็อกตอบกลับทันที
+          // ยังไม่พ้นกำหนดแบน 7 วัน 
           return res.status(403).json({ 
-            message: `❌ บัญชีของคุณถูกระงับสิทธิ์การจองชั่วคราวเนื่องจากไม่มาเช็คอินครบ 3 ครั้ง จะสามารถใช้งานได้อีกครั้งหลังจากวันที่ ${user.banUntil} ครับเพื่อน!` 
+            message: `❌ บัญชีของคุณถูกระงับสิทธิ์การจองชั่วคราวเนื่องจากไม่มาเช็คอินครบ 3 ครั้ง จะสามารถใช้งานได้อีกครั้งหลังจากวันที่ ${user.banUntil} ` 
           });
         } else {
-          // 🎉 พ้นกำหนด 7 วันแล้ว สั่งล้างไพ่คืนอิสรภาพให้อัตโนมัติเลย!
           user.status = 'ปกติ';
           user.noShowCount = 0;
           user.banUntil = null;
@@ -33,16 +31,14 @@ export const createBooking = async (req, res) => {
       }
     }
 
-    // 🛡️ จุดที่ 2: ตรรกะตรวจสอบเวลาฝั่งหลังบ้าน (ดักจองเวลาอดีต)
+    // ตรวจสอบเวลาฝั่งหลังบ้านทำให้ไม่สามารถจองอดีตได้
     try {
       const [d, m, y] = bookingDate.split('/');
       let year = parseInt(y);
-      
-      // แปลงปี พ.ศ. ให้เป็น ค.ศ. สำหรับใช้ใน Object Date ของ JavaScript (ปรับเงื่อนไขให้รัดกุม)
+       
       if (year < 100) year = year + 2500 - 543;
       else if (year > 2500) year = year - 543;
 
-      // ดึงเวลาเริ่มต้นของสล็อต (เช่น "10:00 - 12:00" จะตัดมาเฉพาะ "10:00")
       const startTime = timeSlot.split('-')[0].trim();
       const [hh, mm] = startTime.split(':');
 
@@ -50,14 +46,14 @@ export const createBooking = async (req, res) => {
       const now = new Date();
 
       if (slotDateTime < now) {
-        return res.status(400).json({ message: '❌ ไม่สามารถจองย้อนหลัง หรือจองรอบเวลาที่ผ่านไปแล้วได้ครับเพื่อน!' });
+        return res.status(400).json({ message: '❌ ไม่สามารถจองย้อนหลัง หรือจองรอบเวลาที่ผ่านไปแล้วได้' });
       }
     } catch (err) {
       console.error('Time validation parsing error:', err);
       return res.status(400).json({ message: 'รูปแบบวันที่หรือเวลาไม่ถูกต้อง' });
     }
 
-    // 3. เช็คการจองซ้ำในฐานข้อมูล (กรณีมียกเลิกแล้ว จะไม่นับมาชน)
+    // เช็คการจองซ้ำในฐานข้อมูล ถ้ายกเลิกสามารถจองได้
     const existingBooking = await Booking.findOne({
       facilityId,
       bookingDate,
@@ -66,13 +62,12 @@ export const createBooking = async (req, res) => {
     });
 
     if (existingBooking) {
-      return res.status(400).json({ message: '❌ ช่วงเวลานี้มีคนจองตัดหน้าไปแล้วเพื่อน!' });
+      return res.status(400).json({ message: 'ช่วงเวลานี้มีคนจองแล้ว' });
     }
 
-    // 4. เจนรหัสการจองแบบสุ่ม 6 ตัว
     const generatedCode = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-    // 5. สร้างใบจองใหม่พร้อมบันทึกข้อมูลลงฐานข้อมูล
+    //สร้างการจองใหม่พร้อมบันทึกข้อมูลลงฐานข้อมูล
     const newBooking = new Booking({
       studentId,
       facilityId,
@@ -82,11 +77,11 @@ export const createBooking = async (req, res) => {
       timeSlot,
       type,            
       bookingCode: generatedCode,
-      status: 'รอการเช็คอิน' // ตั้งค่าตั้งต้นเป็น รอการเช็คอิน
+      status: 'รอการเช็คอิน' 
     });
 
     await newBooking.save();
-    res.status(201).json({ message: '🎉 บันทึกการจองสำเร็จ!', booking: newBooking });
+    res.status(201).json({ message: 'บันทึกการจองสำเร็จ!', booking: newBooking });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'เซิร์ฟเวอร์ขัดข้อง' });
@@ -99,7 +94,6 @@ export const getMyBookings = async (req, res) => {
     
     if (!studentId) return res.status(400).json({ message: 'ไม่พบรหัสนักศึกษา' });
 
-    // ดึงข้อมูลการจองทั้งหมดของนักศึกษาคนนี้ (เรียงจากใหม่ไปเก่า)
     const bookings = await Booking.find({ studentId }).sort({ createdAt: -1 });
     res.status(200).json(bookings);
   } catch (error) {
@@ -117,12 +111,12 @@ export const cancelBooking = async (req, res) => {
       return res.status(404).json({ message: 'ไม่พบรายการจอง' });
     }
 
-    // 🛡️ ป้องกันการยกเลิกซ้ำ
+    // ป้องกันการยกเลิกซ้ำ
     if (booking.status === 'ยกเลิกแล้ว') {
       return res.status(400).json({ message: 'รายการนี้ถูกยกเลิกไปแล้ว' });
     }
 
-    // 🛡️ คำนวณเวลาฝั่งเซิร์ฟเวอร์สำหรับการยกเลิก (ต้องมากกว่า 2 ชั่วโมง)
+    // คำนวณเวลาฝั่งเซิร์ฟเวอร์สำหรับการยกเลิก ต้องมากกว่า 2 ชั่วโมง
     const [d, m, y] = booking.bookingDate.split('/');
     let year = parseInt(y);
     if (year < 100) year = year + 2500 - 543;
@@ -142,7 +136,7 @@ export const cancelBooking = async (req, res) => {
       return res.status(400).json({ message: '❌ ต้องยกเลิกก่อนเวลาจองอย่างน้อย 2 ชั่วโมง' });
     }
 
-    // ผ่านเงื่อนไข ทำการอัปเดตสถานะเป็น ยกเลิกแล้ว
+    
     booking.status = 'ยกเลิกแล้ว';
     await booking.save();
 

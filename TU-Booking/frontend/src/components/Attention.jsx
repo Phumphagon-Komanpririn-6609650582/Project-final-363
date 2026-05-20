@@ -4,10 +4,9 @@ function Attention() {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // 👉 1. State สำหรับเก็บประเภทที่กำลังเลือกกรองข้อมูล (Default เป็น 'all' คือดูทั้งหมด)
   const [filterType, setFilterType] = useState('all');
 
-  // ฟังก์ชันยิงกวาดดึงประวัติประกาศข่าวสารล่าสุดจากฐานข้อมูลจริง
+  // ฟังก์ดึงประวัติประกาศข่าวสารล่า
   const fetchAnnouncements = async () => {
     try {
       setLoading(true);
@@ -17,7 +16,7 @@ function Attention() {
         setAnnouncements(data);
       }
     } catch (error) {
-      console.error('❌ นักศึกษาโหลดกระดานประกาศข่าวสารล้มเหลว:', error);
+      console.error('❌ โหลดกระดานประกาศข่าวสารล้มเหลว:', error);
     } finally {
       setLoading(false);
     }
@@ -27,7 +26,6 @@ function Attention() {
     fetchAnnouncements();
   }, []);
 
-  // ตรรกะจับสัญญาณพ่นไอคอนและคลาสตามประเภทความรุนแรงของฟิลด์หลังบ้าน
   const getAnnouncementMeta = (type) => {
     switch (type) {
       case 'warning':
@@ -39,13 +37,12 @@ function Attention() {
     }
   };
 
-  // 👉 2. เครื่องยนต์คัดกรองประกาศ (Filter Engine) อิงตามปุ่มที่แอดมินหรือนศ.คลิกเลือก
+  //คัดกรองประกาศ
   const filteredAnnouncements = announcements.filter((item) => {
-    if (filterType === 'all') return true; // ถ้าเลือก 'all' ให้ผ่านหมดทุกตัว
-    return item.type === filterType; // คัดเอาเฉพาะไอเทมที่ประเภทตรงกับฟิลเตอร์
+    if (filterType === 'all') return true;
+    return item.type === filterType;
   });
 
-  // สไตล์สำหรับจัดการความสวยงามของปุ่มกรอง (มึงไปปรับแก้คลาส CSS เพิ่มเติมได้นะเพื่อน)
   const getFilterBtnStyle = (type, activeColor) => {
     const isActive = filterType === type;
     return {
@@ -72,7 +69,6 @@ function Attention() {
           <i className="fa-solid fa-bullhorn"></i>
         </div>
 
-        {/* 👉 3. แผงปุ่มสำหรับกดกรองประเภทข่าวสารอัจฉริยะ */}
         <div className="announcement-filters" style={{ display: 'flex', gap: '8px', paddingRight: '1rem' }}>
           <button 
             style={getFilterBtnStyle('all', '#444')} 
@@ -107,7 +103,6 @@ function Attention() {
             🔄 กำลังอัปเดตข่าวสารล่าสุดจากแอดมิน...
           </p>
         ) : filteredAnnouncements.length > 0 ? (
-          // 👉 เปลี่ยนมาลูปการ์ดจากอาเรย์ผลลัพธ์ตัวกรอง filteredAnnouncements แทนตัวเดิม
           filteredAnnouncements.map((item) => {
             const meta = getAnnouncementMeta(item.type);
 
@@ -129,7 +124,6 @@ function Attention() {
             );
           })
         ) : (
-          /* กรณีกลุ่มข่าวสารประเภทนั้น ๆ ไม่มีข้อมูลอยู่ */
           <div style={{ padding: '3rem', textAlign: 'center', color: '#999' }}>
             <i className="fa-solid fa-folder-open" style={{ fontSize: '2.5rem', marginBottom: '0.8rem', color: '#CCC' }}></i>
             <p style={{ margin: 0 }}>ไม่มีรายการข่าวสารประเภทนี้ในขณะนี้</p>

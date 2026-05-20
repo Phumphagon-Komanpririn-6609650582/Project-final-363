@@ -10,11 +10,9 @@ function KromLuangBooking({ onBack, user }) {
     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
-  // 1. แยกฟังก์ชัน fetch ออกมาข้างนอก เพื่อให้เรียกใช้ซ้ำได้หลังจอง
   const fetchKromLuangRooms = useCallback(async () => {
     try {
       setLoading(true);
-      // ส่ง date ไปให้หลังบ้านเช็คสถานะในตาราง bookings ด้วย
       const response = await fetch(`http://localhost:4000/api/facilities?type=Study&date=${selectedDate}`);
       const data = await response.json();
 
@@ -29,7 +27,7 @@ function KromLuangBooking({ onBack, user }) {
         type: room.type, 
         slots: room.slots.map(slot => ({
           time: slot.time,
-          isAvailable: slot.isAvailable // 👉 รับค่าที่เช็คมาจาก DB
+          isAvailable: slot.isAvailable
         }))
       }));
 
@@ -45,43 +43,37 @@ function KromLuangBooking({ onBack, user }) {
     fetchKromLuangRooms();
   }, [fetchKromLuangRooms]);
 
-  // 👉 อัปเดตฟังก์ชันดักการกดสล็อตเวลาที่ผ่านมาแล้ว ให้ปลอดภัยจากบั๊กปี ค.ศ.
+
   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
-    // 1. เช็คว่าเวลานี้มีคนจองตัดหน้าไปหรือยัง
     if (!isAvailable) {
-      alert("⚠️ เวลานี้มีคนจองแล้วเพื่อน!");
+      alert("⚠️ เวลานี้มีคนจองแล้ว!");
       return;
     }
 
-    // 2. 🛡️ เช็คว่าเวลาที่จะจอง มันเลยเวลาปัจจุบันไปหรือยัง
     try {
       const [d, m, y] = selectedDate.split('/');
       let year = parseInt(y);
       
-      // แปลงปี พ.ศ. ให้เป็น ค.ศ. สำหรับใช้ใน Object Date ของ JavaScript (ปรับเงื่อนไขให้รัดกุม)
       if (year < 100) {
-        year = year + 2500 - 543; // กรณีมาเป็นปี 2 หลัก เช่น 69 -> 2569 -> 2026
+        year = year + 2500 - 543;
       } else if (year > 2500) {
-        year = year - 543; // กรณีมาเป็นปี พ.ศ. 4 หลัก เช่น 2569 -> 2026
+        year = year - 543;
       }
 
-      // ดึงเวลาเริ่มต้นของสล็อต (เช่น "13:00 - 15:00" ดึงออกมาแค่ "13:00")
       const startTime = time.split('-')[0].trim();
       const [hh, mm] = startTime.split(':');
 
       const slotDateTime = new Date(year, parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm));
       const now = new Date();
 
-      // ถ้าเวลาของสล็อตน้อยกว่าเวลาปัจจุบัน แปลว่าเลยรอบไปแล้ว (เป็นอดีต)
       if (slotDateTime < now) {
-        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้วครับเพื่อน!");
-        return; // บล็อกไว้ ไม่เปิด Modal ยืนยัน
+        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้ว!");
+        return;
       }
     } catch (error) {
       console.error("Error parsing date/time validation:", error);
     }
 
-    // ถ้าผ่านเงื่อนไข ค่อยเปิดกางกล่อง Modal
     setSelectedBooking({ roomId, roomName, time, date: selectedDate });
     setIsModalOpen(true);
   };
@@ -91,9 +83,9 @@ function KromLuangBooking({ onBack, user }) {
     const currentRoom = rooms.find(r => r.id === roomId);
 
     const bookingData = {
-      studentId: user?.studentId || "6609650582",
+      studentId: user?.studentId,
       facilityId: roomId,      
-      facilityName: currentRoom?.title || "Krom Luang Naradhiwas Rajanagarinda Learning Centre",
+      facilityName: currentRoom?.title,
       roomName: currentRoom?.name || roomName,
       bookingDate: date,        
       timeSlot: time,
@@ -111,7 +103,6 @@ function KromLuangBooking({ onBack, user }) {
 
       if (response.ok) {
         alert('🎉 จองสำเร็จ!');
-        // 👉 สั่ง Refresh ข้อมูลใหม่ทันที ปุ๊บปั๊บปุ่มเปลี่ยนเป็นสีแดง (Unavailable)
         fetchKromLuangRooms(); 
       } else {
         alert(result.message || 'เกิดข้อผิดพลาดในการจอง');
@@ -150,12 +141,11 @@ function KromLuangBooking({ onBack, user }) {
                   src={room.img} 
                   alt={room.name} 
                   className="court-thumbnail" 
-                  onError={(e) => { e.target.onerror = null; e.target.src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=200&auto=format&fit=crop" }} // ใส่รูปสำรองเผื่อ Path พัง
+                  onError={(e) => { e.target.onerror = null; e.target.src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=200&auto=format&fit=crop" }}
                 />
                 <div className="court-info">
                   <h4>{room.name}</h4>
                   
-                  {/* 👉 ดึงคำอธิบายห้องมาโชว์ให้เรียบร้อยแล้วตรงนี้ */}
                   {room.desc && <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1rem' }}>{room.desc}</p>}
                   
                   <div className="time-slots">

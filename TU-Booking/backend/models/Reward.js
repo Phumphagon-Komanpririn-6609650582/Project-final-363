@@ -17,15 +17,15 @@ const rewardSchema = new mongoose.Schema({
   },
   icon: {
     type: String,
-    default: 'fa-solid fa-gift' // กรณีใช้ FontAwesome
+    default: 'fa-solid fa-gift'
   },
   img: {
     type: String,
-    default: '' // กรณีใส่ลิงก์รูปภาพ
+    default: ''
   },
   color: {
     type: String,
-    default: '#4A90E2' // สีประจำการ์ดของรางวัล
+    default: '#4A90E2'
   }
 }, { timestamps: true });
 

@@ -6,17 +6,14 @@ function MyBooking({ user }) {
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-  // ส่วนจัดการฝั่งประวัติของรางวัล
   const [myRewards, setMyRewards] = useState([]);
   const [loadingRewards, setLoadingRewards] = useState(false);
   const [selectedReward, setSelectedReward] = useState(null);
 
-  // 👉 🎯 1. [เพิ่มใหม่] สเตตควบคุมเปิด/ปิด และเก็บข้อมูลสำหรับระบบรายงานสิ่งชำรุด
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [reportBooking, setReportBooking] = useState(null);
   const [reportDescription, setReportDescription] = useState('');
 
-  // ฟังก์ชันดึงประวัติคิวจองสิ่งอำนวยความสะดวก
   const fetchBookings = async () => {
     try {
       if (!user?.studentId) return;
@@ -26,12 +23,11 @@ function MyBooking({ user }) {
       
       if (response.ok) {
         const formatted = data.map(b => {
-          // 👉 ตรรกะกระจายสีป้ายสถานะให้ตรงตามเงื่อนไขฐานข้อมูลจริงของระบบ
-          let statusColor = '#FDE073'; // รอการเช็คอิน (เหลือง)
-          if (b.status === 'เช็คอินเรียบร้อย') statusColor = '#8BE3A8'; // เขียว
-          if (b.status === 'ปฏิเสธการจอง') statusColor = '#FFB3B3'; // แดงอ่อน
-          if (b.status === 'ไม่มาตามนัด') statusColor = '#E0E0E0'; // เทาประวัติเสีย
-          if (b.status === 'ยกเลิกแล้ว') statusColor = '#FFC0CB'; // ชมพู/แดงจางๆ
+          let statusColor = '#FDE073';
+          if (b.status === 'เช็คอินเรียบร้อย') statusColor = '#8BE3A8';
+          if (b.status === 'ปฏิเสธการจอง') statusColor = '#FFB3B3';
+          if (b.status === 'ไม่มาตามนัด') statusColor = '#E0E0E0';
+          if (b.status === 'ยกเลิกแล้ว') statusColor = '#FFC0CB';
 
           return {
             id: b._id,
@@ -56,7 +52,6 @@ function MyBooking({ user }) {
     }
   };
 
-  // ฟังก์ชันดึงข้อมูลประวัติของรางวัลที่แลกมาจากฐานข้อมูล
   const fetchMyRewards = async () => {
     try {
       if (!user?.studentId) return;
@@ -68,7 +63,7 @@ function MyBooking({ user }) {
         setMyRewards(data);
       }
     } catch (error) {
-      console.error('❌ ดึงประวัติของรางวัลพัง:', error);
+      console.error('❌ ดึงประวัติของรางวัลไม่สำเร็จ:', error);
     } finally {
       setLoadingRewards(false);
     }
@@ -79,15 +74,13 @@ function MyBooking({ user }) {
     fetchMyRewards();
   }, [user]);
 
-  // 👉 🎯 2. [เพิ่มใหม่] ฟังก์ชันเปิด Modal กรอกข้อความส่งรายงานชำรุด
   const openReportModal = (e, booking) => {
-    e.stopPropagation(); // 🛡️ กันไม่ให้แถวคลิกทำงานจนหน้าต่างข้อมูลการจองเด้งซ้อน
+    e.stopPropagation();
     setReportBooking(booking);
     setReportDescription('');
     setIsReportModalOpen(true);
   };
 
-  // 👉 🎯 3. [เพิ่มใหม่] ฟังก์ชันยิง Fetch บันทึกรายงานชำรุดลง MongoDB จริง
   const handleSendReport = async (e) => {
     e.preventDefault();
     if (!reportDescription.trim()) return alert('กรุณากรอกรายละเอียดสิ่งที่ชำรุดเสียหาย');
@@ -99,7 +92,8 @@ function MyBooking({ user }) {
         body: JSON.stringify({
           bookingId: reportBooking.id,
           facilityName: reportBooking.facility,
-          userName: user?.name, // ดึงเมลจริงจาก Object user ของมึง
+          roomName: reportBooking.room,
+          userEmail: user?.name || user?.studentId || 'ไม่ระบุอีเมลนักศึกษา',
           description: reportDescription
         })
       });
@@ -160,12 +154,11 @@ function MyBooking({ user }) {
         <button className={viewMode === 'rewards' ? 'tab-btn active' : 'tab-btn'} onClick={() => setViewMode('rewards')}>ของรางวัลของฉัน</button>
       </div>
 
-      {/* --- แท็บระบบที่ 1: รายการคิวจอง --- */}
       {viewMode === 'bookings' && (
         <div className="booking-table-container">
           <div className="booking-table-header" style={{ display: 'flex', fontWeight: 'bold', padding: '1rem', backgroundColor: '#F8F9FA' }}>
-            <div style={{ flex: 1.8, textAlign: 'center' }}>จัดการ</div> {/* ขยับสเปซเพิ่มปุ่มรายงาน */}
-            <div style={{ flex: 1.5, textAlign: 'center' }}>官สถานะ</div>
+            <div style={{ flex: 1.8, textAlign: 'center' }}>จัดการ</div>
+            <div style={{ flex: 1.5, textAlign: 'center' }}>สถานะ</div>
             <div style={{ flex: 1.2, textAlign: 'center' }}>รหัสการจอง</div>
             <div style={{ flex: 1.2, textAlign: 'center' }}>วันที่</div>
             <div style={{ flex: 1.5, textAlign: 'center' }}>เวลา</div>
@@ -180,13 +173,11 @@ function MyBooking({ user }) {
             bookings.map(item => (
               <div key={item.id} className="booking-table-row" onClick={() => setSelectedBooking(item)} style={{ display: 'flex', alignItems: 'center', padding: '1rem 0', borderBottom: '1px solid #EEE', cursor: 'pointer' }}>
                 
-                {/* 🛠️ ส่วนจัดการ: พ่นปุ่มอิงตามความเงื่อนไขสถานะจริง */}
                 <div style={{ flex: 1.8, textAlign: 'center', display: 'flex', gap: '6px', justifyContent: 'center' }}>
                   {item.status === 'รอการเช็คอิน' && (
                     <button className="cancel-booking-btn" onClick={(e) => { e.stopPropagation(); handleCancelBooking(item); }} style={{ backgroundColor: '#E31B23', color: '#FFF', border: 'none', padding: '0.3rem 0.6rem', borderRadius: '4px', cursor: 'pointer' }}>ยกเลิก</button>
                   )}
                   
-                  {/* 👉 🎯 [จุดแก้ไขบรีฟหลัก] เช็คสถานะ "เช็คอินเรียบร้อย" สั่งเรนเดอร์ปุ่มแดงรายงานชำรุดทันที */}
                   {item.status === 'เช็คอินเรียบร้อย' && (
                     <button 
                       onClick={(e) => openReportModal(e, item)} 
@@ -214,7 +205,6 @@ function MyBooking({ user }) {
         </div>
       )}
 
-      {/* --- แท็บระบบที่ 2: ของรางวัลของฉัน --- */}
       {viewMode === 'rewards' && (
         <div className="booking-table-container">
           <div className="booking-table-header" style={{ display: 'flex', fontWeight: 'bold', padding: '1rem', backgroundColor: '#F8F9FA' }}>
@@ -249,7 +239,6 @@ function MyBooking({ user }) {
         </div>
       )}
 
-      {/* PopUp รายละเอียดคิวจอง */}
       {selectedBooking && (
         <div className="modal-overlay" onClick={() => setSelectedBooking(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{textAlign: 'center', padding: '2rem', backgroundColor: '#FFF', borderRadius: '8px', maxWidth: '400px', width: '100%' }}>
@@ -276,7 +265,6 @@ function MyBooking({ user }) {
         </div>
       )}
 
-      {/* PopUp ตั๋วโชว์รหัสของรางวัล */}
       {selectedReward && (
         <div className="modal-overlay" onClick={() => setSelectedReward(null)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center', padding: '2rem', backgroundColor: '#FFF', borderRadius: '8px', maxWidth: '400px', width: '100%' }}>
@@ -295,9 +283,6 @@ function MyBooking({ user }) {
         </div>
       )}
 
-      {/* ======================================================= */}
-      {/* 👉 🎯 4. [เพิ่มใหม่] MODAL POPUP: ฟอร์มส่งข้อมูลแจ้งสิ่งของชำรุดเสียหาย */}
-      {/* ======================================================= */}
       {isReportModalOpen && reportBooking && (
         <div className="modal-overlay" onClick={() => setIsReportModalOpen(false)} style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '450px', backgroundColor: '#FFF', padding: '2rem', borderRadius: '8px', width: '100%' }}>
@@ -336,7 +321,6 @@ function MyBooking({ user }) {
           </div>
         </div>
       )}
-
     </div>
   );
 }

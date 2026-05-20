@@ -43,43 +43,36 @@ function BadmintonGym4({ onBack, user }) {
     fetchBadmintonGym4();
   }, [fetchBadmintonGym4]);
 
-  // 👉 อัปเดตฟังก์ชันดักการกดสล็อตเวลาที่ผ่านมาแล้ว ให้ยืดหยุ่นและปลอดภัยจากบั๊กเรื่องปี
   const handleSlotClick = (courtId, courtName, time, isAvailable) => {
-    // 1. เช็คว่ามีคนจองตัดหน้าไปแล้วหรือยัง
     if (!isAvailable) {
-      alert("⚠️ ช่วงเวลานี้ถูกจองไปแล้วครับเพื่อน!");
+      alert("⚠️ ช่วงเวลานี้ถูกจองไปแล้ว");
       return;
     }
 
-    // 2. 🛡️ เช็คว่าสล็อตเวลานี้เลยเวลาปัจจุบันไปหรือยัง
     try {
       const [d, m, y] = selectedDate.split('/');
       let year = parseInt(y);
       
-      // แปลงปี พ.ศ. ให้เป็น ค.ศ. สำหรับใช้ใน Object Date ของ JavaScript (ปรับเงื่อนไขให้รัดกุม)
       if (year < 100) {
-        year = year + 2500 - 543; // กรณีมาเป็นปี 2 หลัก เช่น 69 -> 2569 -> 2026
+        year = year + 2500 - 543;
       } else if (year > 2500) {
-        year = year - 543; // กรณีมาเป็นปี พ.ศ. 4 หลัก เช่น 2569 -> 2026
+        year = year - 543;
       }
 
-      // แปลงเวลาเริ่มต้น (เช่น "12:00 - 13:00" ดึงออกมาแค่ "12:00")
       const startTime = time.split('-')[0].trim();
       const [hh, mm] = startTime.split(':');
 
       const slotDateTime = new Date(year, parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm));
       const now = new Date();
 
-      // ถ้าเวลาสล็อตน้อยกว่าเวลาปัจจุบัน = อดีต (บล็อกทันที)
       if (slotDateTime < now) {
-        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้วครับเพื่อน!");
+        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้ว!");
         return; 
       }
     } catch (error) {
       console.error("Error parsing date/time validation:", error);
     }
 
-    // ถ้าว่างและยังไม่เลยเวลา ค่อยเปิด Modal ยืนยันการจอง
     setSelectedBooking({ courtId, courtName, time, date: selectedDate });
     setIsModalOpen(true);
   };
@@ -89,9 +82,9 @@ function BadmintonGym4({ onBack, user }) {
     const currentCourt = courts.find(c => c.id === courtId);
 
     const bookingData = {
-      studentId: user?.studentId || "6609650582",
+      studentId: user?.studentId,
       facilityId: courtId,
-      facilityName: currentCourt?.title || "Badminton Court Gym 4",
+      facilityName: currentCourt?.title,
       roomName: currentCourt?.name || courtName,
       bookingDate: date,
       timeSlot: time,

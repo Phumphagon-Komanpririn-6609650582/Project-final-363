@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// ⚠️ อย่าลืม Import รูปภาพจากโฟลเดอร์ assets
 import pueyImg from '/assets/puey_library.png'; 
 import kromLuangImg from '/assets/krom_luang.png'; 
 
@@ -28,7 +27,6 @@ function Study({ onBack, onSelectRoom }) {
         <i className="fa-solid fa-chevron-left"></i> ย้อนกลับ
       </div>
 
-      {/* ใช้ Class ชื่อ study-card-grid ให้ถูกต้องตามบริบท */}
       <div className="study-card-grid">
         {studyRooms.map((room) => (
           <div 

@@ -1,15 +1,16 @@
 import Report from '../models/Report.js';
 
-// 📝 1. สร้างรายงานสิ่งชำรุดใหม่ (ตัวเดิมที่มึงมีอยู่แล้ว)
+//สร้างรายงานสิ่งชำรุด
 export const createReport = async (req, res) => {
   try {
-    const { bookingId, facilityName, userEmail, description } = req.body;
+    const { bookingId, facilityName, roomName, userEmail, description } = req.body;
     if (!description || !description.trim()) {
-      return res.status(400).json({ message: 'กรุณาระบุรายละเอียดการชำรุดด้วยครับ' });
+      return res.status(400).json({ message: 'กรุณาระบุรายละเอียดการชำรุด' });
     }
     const newReport = new Report({
       bookingId,
       facilityName,
+      roomName,
       userEmail,
       description,
       date: new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -21,10 +22,10 @@ export const createReport = async (req, res) => {
   }
 };
 
-// 📥 2. [เพิ่มใหม่] ดึงรายการรายงานสิ่งชำรุดทั้งหมดให้ฝั่ง Admin
+//ดึงรายการรายงานสิ่งชำรุดทั้งหมดฝั่ง Admin
 export const getAdminReports = async (req, res) => {
   try {
-    const reports = await Report.find().sort({ createdAt: -1 }); // เรียงจากใบแจ้งล่าสุดขึ้นก่อน
+    const reports = await Report.find().sort({ createdAt: -1 });
     res.status(200).json(reports);
   } catch (error) {
     console.error(error);
@@ -32,22 +33,22 @@ export const getAdminReports = async (req, res) => {
   }
 };
 
-// 🔄 3. [เพิ่มใหม่] อัปเดตสถานะงานซ่อม หรือ ลบประวัติกรณีสับเปลี่ยนสถานะสำเร็จ
+//อัปเดตสถานะงานซ่อม
 export const updateReportStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body; // รับค่า 'resolved' เพื่อปิดงาน
+    const { status } = req.body;
 
     const updated = await Report.findByIdAndUpdate(id, { status }, { new: true });
-    if (!updated) return res.status(404).json({ message: 'ไม่พบประวัติใบนี้' });
+    if (!updated) return res.status(404).json({ message: 'ไม่พบประวัติ' });
 
-    res.status(200).json({ message: '🔧 อัปเดตสถานะงานช่างสำเร็จแล้วเพื่อน!', updated });
+    res.status(200).json({ message: '🔧 อัปเดตสถานะงานช่างสำเร็จ', updated });
   } catch (error) {
-    res.status(500).json({ message: 'อัปเดตสถานะขัดข้อง' });
+    res.status(500).json({ message: 'อัปเดตสถานะไม่สำเร็จ' });
   }
 };
 
-// 🗑️ 4. [เพิ่มใหม่] ลบประวัติใบแจ้งซ่อมออกจากฐานข้อมูลเด็ดขาด
+//ลบประวัติแจ้งซ่อมออกจากฐานข้อมูล
 export const deleteReport = async (req, res) => {
   try {
     const { id } = req.params;

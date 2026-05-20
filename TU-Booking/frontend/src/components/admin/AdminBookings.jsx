@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
 function AdminBookings() {
-  // 🧭 1. ส่วนควบคุมแท็บ 'bookings' = จัดการคิวจอง, 'rewards' = อนุมัติของรางวัล
   const [viewMode, setViewMode] = useState('bookings'); 
 
   // ข้อมูลฝั่งคิวจอง
@@ -16,10 +15,9 @@ function AdminBookings() {
   const [loadingRewards, setLoadingRewards] = useState(false);
   const [rewardStatusFilter, setRewardStatusFilter] = useState('ทั้งหมด');
 
-  // 👉 🎯 [เพิ่มใหม่] State สำหรับช่องค้นหา (Search Global ยิงพร้อมกันได้สองหน้า)
   const [searchTerm, setSearchTerm] = useState('');
 
-  // ฟังก์ชันกวาดดึงข้อมูลการจอง
+  // ฟังก์ชันดึงข้อมูลการจอง
   const fetchBookings = async () => {
     try {
       setLoading(true);
@@ -35,7 +33,7 @@ function AdminBookings() {
     }
   };
 
-  // ฟังก์ชันกวาดดึงข้อมูลประวัติการแลกของรางวัลจาก MongoDB จริง
+  // ฟังก์ชันดึงข้อมูลประวัติการแลกของรางวัล
   const fetchRedeemHistory = async () => {
     try {
       setLoadingRewards(true);
@@ -45,13 +43,12 @@ function AdminBookings() {
         setRedeemList(data);
       }
     } catch (error) {
-      console.error('❌ ดึงประวัติของรางวัลพัง:', error);
+      console.error('❌ ดึงประวัติของรางวัลไม่สำเร็จ', error);
     } finally {
       setLoadingRewards(false);
     }
   };
 
-  // ทุกครั้งที่สลับแท็บให้ล้างช่องค้นหาเพื่อ UX ที่ดี
   useEffect(() => {
     setSearchTerm('');
   }, [viewMode]);
@@ -61,32 +58,37 @@ function AdminBookings() {
     fetchRedeemHistory();
   }, []);
 
-  // ฟังก์ชันกด "อนุมัติ" คิวจองสถานที่
+  // ฟังก์ชันอนุมัติ คิวจองสถานที่
   const handleApprove = async (id, name) => {
-    if (window.confirm(`คุณต้องการยืนยันการ "อนุมัติเช็คอิน" ของคุณ ${name} ใช่หรือไม่?`)) {
+    if (window.confirm(`คุณต้องการยืนยันการเช็คอินของคุณ ${name} ใช่หรือไม่?`)) {
       try {
         const response = await fetch(`http://localhost:4000/api/bookings/admin/approve/${id}`, {
           method: 'PUT'
         });
+        const data = await response.json();
+
         if (response.ok) {
-          alert('✅ บันทึกสถานะอนุมัติเช็คอินสำเร็จ!');
+          alert(data.message || '✅ บันทึกสถานะอนุมัติเช็คอินสำเร็จ!');
           fetchBookings(); 
+        } else {
+          alert(`❌ เกิดข้อผิดพลาด: ${data.message}`);
         }
       } catch (error) {
-        console.error(error);
+        console.error('❌ อนุมัติการเช็คอินล้มเหลว:', error);
+        alert('❌ ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
       }
     }
   };
 
-  // ฟังก์ชันทำโทษกรณีผู้ใช้ "ไม่มาตามนัด" (No-show) หักจุดประพฤติ
+  // ฟังก์ชันทำโทษกรณีผู้ใช้ ไม่มาตามนัด
   const handleNoShowPenalty = async (id, name) => {
-    if (window.confirm(`ยืนยันการลงโทษตัดสิทธิ์เนื่องจากคุณ ${name} "ไม่มาตามนัด" ใช่หรือไม่?`)) {
+    if (window.confirm(`ยืนยันการลงโทษตัดสิทธิ์เนื่องจากคุณ ${name}ไม่มาตามนัดใช่หรือไม่?`)) {
       try {
         const response = await fetch(`http://localhost:4000/api/bookings/admin/penalty/${id}`, {
           method: 'PUT'
         });
         if (response.ok) {
-          alert('⚠️ บันทึกประวัติผิดกฎ No-show เรียบร้อย จุดประพฤติหน้านักศึกษาจะอัปเดตสีอัตโนมัติ!');
+          alert('⚠️ บันทึกประวัติผิดกฎเรียบร้อย!');
           fetchBookings();
         }
       } catch (error) {
@@ -103,7 +105,7 @@ function AdminBookings() {
 
   const handleConfirmReject = async (e) => {
     e.preventDefault();
-    if (!reasonInput.trim()) return alert('กรุณาระบุเหตุผลในการปฏิเสธการจองด้วยครับ');
+    if (!reasonInput.trim()) return alert('กรุณาระบุเหตุผลในการปฏิเสธการจอง');
 
     try {
       const response = await fetch(`http://localhost:4000/api/bookings/admin/reject/${selectedBookingId}`, {
@@ -122,7 +124,7 @@ function AdminBookings() {
     }
   };
 
-  // ฟังก์ชันแอดมินกด "อนุมัติใช้งานของรางวัล"
+  // ฟังก์ชันแอดมินกดอนุมัติใช้ของรางวัล
   const handleApproveRedeem = async (id, rewardName, studentId) => {
     if (window.confirm(`คุณต้องการยืนยันการอนุมัติรับของรางวัล "${rewardName}" ของนักศึกษา รหัส ${studentId} ใช่หรือไม่?`)) {
       try {
@@ -140,7 +142,6 @@ function AdminBookings() {
     }
   };
 
-  // ฟังก์ชันคำนวณเทียบเวลาปัจจุบัน
   const checkIfPastTime = (bookingDate, timeSlot) => {
     try {
       if (!bookingDate || !timeSlot) return false;
@@ -177,7 +178,6 @@ function AdminBookings() {
     }
   };
 
-  // 👉 🎯 2. ตรรกะคัดกรอง + Search ของฝั่ง "คิวจองสถานที่"
   const filteredBookings = bookingRequests.filter(item => {
     const matchSearch = 
       item.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -186,12 +186,11 @@ function AdminBookings() {
     return matchSearch;
   });
 
-  // 👉 🎯 3. ตรรกะคัดกรอง + Filter สถานะ + Search ของฝั่ง "แลกของรางวัล"
   const filteredRewards = redeemList.filter(item => {
-    // กรองสถานะปุ่มเมนูก่อน
+    // กรองสถานะปุ่มเมนู
     if (rewardStatusFilter !== 'ทั้งหมด' && item.status !== rewardStatusFilter) return false;
     
-    // กรองคำค้นหา Search ต่อ
+    // กรองคำค้นหา Search
     const matchSearch = 
       item.studentId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.rewardName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -202,17 +201,15 @@ function AdminBookings() {
   return (
     <div className="admin-dashboard-container" style={{ padding: '2rem', backgroundColor: '#EEF0F8', minHeight: '100vh' }}>
       
-      {/* ส่วนหัวแผงแอดมินสลับตามชิ้นงานจริงแบบ Dynamic */}
       <h1 className="admin-page-title" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', margin: 0 }}>
         {viewMode === 'bookings' ? '📥 ตารางตรวจสอบและอนุมัติการจอง' : '🎁 ตารางตรวจสอบอนุมัติของรางวัล'}
       </h1>
       <p className="admin-page-subtitle" style={{ color: '#666', marginTop: '0.4rem', marginBottom: '1.5rem' }}>
         {viewMode === 'bookings' 
           ? 'จัดการสิทธิ์เข้าใช้งาน คุมวินัยการเข้าเช็คอินห้องติว คาราโอเกะ และสนามย่อยของนักศึกษา' 
-          : 'ตัดสิทธิ์ตั๋วโค้ด หรือยืนยันการแจกตุ๊กตา ของที่ระลึก และสิทธิพิเศษของทางมหาวิทยาลัย'}
+          : 'ตัดสิทธิ์หรือยืนยันการแจกสิทธิพิเศษของทางมหาวิทยาลัย'}
       </p>
 
-      {/* สวิตช์ปุ่มแท็บสลับหน้าสไตล์หน้า User */}
       <div className="tab-switcher" style={{ display: 'flex', gap: '10px', marginBottom: '1.5rem' }}>
         <button 
           onClick={() => setViewMode('bookings')}
@@ -228,13 +225,12 @@ function AdminBookings() {
         </button>
       </div>
 
-      {/* 👉 🎯 4. [ส่วนประกอบเพิ่มใหม่] แผงเครื่องมือค้นหาอัจฉริยะ (Search Bar) สไตล์โมเดิร์น */}
       <div style={{ backgroundColor: '#FFF', padding: '1rem 1.2rem', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1.2rem' }}>
         <div style={{ position: 'relative', flex: 1, display: 'flex', alignItems: 'center' }}>
           <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', color: '#888' }}></i>
           <input 
             type="text" 
-            placeholder={viewMode === 'bookings' ? "🔎 ค้นหาด้วยรหัสนักศึกษา, ชื่อสถานที่ หรือชื่อผู้จอง..." : "🔎 ค้นหาด้วยรหัสนักศึกษา, รหัสตั๋ว Ticket หรือชื่อของรางวัล..."}
+            placeholder={viewMode === 'bookings' ? "ค้นหาด้วยรหัสนักศึกษา, ชื่อสถานที่ หรือชื่อผู้จอง..." : "ค้นหาด้วยรหัสนักศึกษา, รหัสตั๋ว Ticket หรือชื่อของรางวัล..."}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ width: '100%', padding: '0.65rem 1rem 0.65rem 2.4rem', borderRadius: '8px', border: '1px solid #DDD', outline: 'none', fontSize: '0.9rem', color: '#333', transition: 'border-color 0.2s' }}
@@ -247,94 +243,98 @@ function AdminBookings() {
         </div>
       </div>
 
-      {/* ======================================================== */}
-      {/* 📊 แท็บระบบที่ 1: ตารางรายชื่อคิวจองสนามกีฬา/ห้องเรียน */}
-      {/* ======================================================== */}
       {viewMode === 'bookings' && (
-        <div className="booking-table-container" style={{ backgroundColor: '#FFF', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-          <div className="booking-table-header" style={{ display: 'flex', padding: '1rem', backgroundColor: '#F8F9FA', color: '#444', borderBottom: '2px solid #EEE' }}>
-            <div style={{ flex: 2.8, textAlign: 'center', fontWeight: 'bold' }}>การจัดการคำขอ / เครื่องมือควบคุม</div>
-            <div style={{ flex: 1.5, textAlign: 'center', fontWeight: 'bold' }}>สถานะ</div>
-            <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold' }}>เวลาจอง</div>
-            <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold' }}>วันที่จอง</div>
-            <div style={{ flex: 2.8, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold' }}>สถานที่ / รายละเอียดห้อง</div>
-            <div style={{ flex: 1,   textAlign: 'center', fontWeight: 'bold' }}>ประเภท</div>
-            <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold' }}>ผู้จอง (นศ.)</div>
-          </div>
+  <div className="booking-table-container" style={{ backgroundColor: '#FFF', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+    {/* 📋 หัวตารางคำขอจองคิว: เพิ่มคอลัมน์รหัสการจอง และเฉลี่ยสัดส่วน flex ใหม่ */}
+    <div className="booking-table-header" style={{ display: 'flex', padding: '1rem', backgroundColor: '#F8F9FA', color: '#444', borderBottom: '2px solid #EEE' }}>
+      <div style={{ flex: 2.5, textAlign: 'center', fontWeight: 'bold' }}>การจัดการคำขอ / เครื่องมือควบคุม</div>
+      <div style={{ flex: 1.5, textAlign: 'center', fontWeight: 'bold' }}>สถานะ</div>
+      <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold' }}>รหัสการจอง</div>
+      <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold' }}>เวลาจอง</div>
+      <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold' }}>วันที่จอง</div>
+      <div style={{ flex: 2.8, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold' }}>สถานที่ / รายละเอียดห้อง</div>
+      <div style={{ flex: 1,   textAlign: 'center', fontWeight: 'bold' }}>ประเภท</div>
+      <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold' }}>ผู้จอง</div>
+    </div>
 
-          {loading ? (
-            <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังดึงข้อมูลตารางตรวจสอบจากฐานข้อมูล...</p>
-          ) : filteredBookings.length > 0 ? (
-            filteredBookings.map(item => {
-              const isPast = checkIfPastTime(item.bookingDate, item.timeSlot);
-              const studentDisplayName = item.studentName || 'นักศึกษาในระบบ';
+    {loading ? (
+      <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังดึงข้อมูลตารางตรวจสอบจากฐานข้อมูล...</p>
+    ) : filteredBookings.length > 0 ? (
+      filteredBookings.map(item => {
+        const isPast = checkIfPastTime(item.bookingDate, item.timeSlot);
+        const studentDisplayName = item.studentName || 'นักศึกษาในระบบ';
 
-              return (
-                <div key={item._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1.2rem 1rem', borderBottom: '1px solid #EEE' }}>
-                  <div style={{ flex: 2.8, textAlign: 'center', display: 'flex', gap: '6px', justifyContent: 'center' }}>
-                    {item.status === 'รอการเช็คอิน' ? (
-                      !isPast ? (
-                        <>
-                          <button style={{ backgroundColor: '#1E8E3E', color: '#FFF', border: 'none', padding: '0.45rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleApprove(item._id, studentDisplayName)}>
-                            <i className="fa-solid fa-check"></i> อนุมัติ
-                          </button>
-                          <button style={{ backgroundColor: '#E31B23', color: '#FFF', border: 'none', padding: '0.45rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => openRejectModal(item._id)}>
-                            <i className="fa-solid fa-xmark"></i> ปฏิเสธ
-                          </button>
-                        </>
-                      ) : (
-                        <button style={{ backgroundColor: '#F5A623', color: '#222', border: 'none', padding: '0.45rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleNoShowPenalty(item._id, studentDisplayName)}>
-                          🚨 ลงโทษ (ไม่มาตามนัด)
-                        </button>
-                      )
-                    ) : item.status === 'เช็คอินเรียบร้อย' ? (
-                      <button style={{ backgroundColor: '#F5A623', color: '#222', border: 'none', padding: '0.45rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleNoShowPenalty(item._id, studentDisplayName)}>
-                        ⚠️ ไม่มาตามนัด
-                      </button>
-                    ) : (
-                      <span style={{ fontSize: '0.85rem', color: '#888', fontStyle: 'italic' }}>จัดการเรียบร้อยแล้ว</span>
-                    )}
-                  </div>
+        return (
+          <div key={item._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1.2rem 1rem', borderBottom: '1px solid #EEE' }}>
+         
+            <div style={{ flex: 2.5, textAlign: 'center', display: 'flex', gap: '6px', justifyContent: 'center' }}>
+              {item.status === 'รอการเช็คอิน' ? (
+                !isPast ? (
+                  <>
+                    <button style={{ backgroundColor: '#1E8E3E', color: '#FFF', border: 'none', padding: '0.45rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleApprove(item._id, studentDisplayName)}>
+                      <i className="fa-solid fa-check"></i> อนุมัติ
+                    </button>
+                    <button style={{ backgroundColor: '#E31B23', color: '#FFF', border: 'none', padding: '0.45rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => openRejectModal(item._id)}>
+                      <i className="fa-solid fa-xmark"></i> ปฏิเสธ
+                    </button>
+                  </>
+                ) : (
+                  <button style={{ backgroundColor: '#F5A623', color: '#222', border: 'none', padding: '0.45rem 1rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => handleNoShowPenalty(item._id, studentDisplayName)}>
+                    🚨 ลงโทษ (ไม่มาตามนัด)
+                  </button>
+                )
+              ) : item.status === 'เช็คอินเรียบร้อย' ? (
+                <span style={{ fontSize: '0.85rem', color: '#1E8E3E', fontWeight: 'bold', fontStyle: 'italic' }}>✓ เช็คอินเรียบร้อย (+2 แต้ม)</span>
+              ) : (
+                <span style={{ fontSize: '0.85rem', color: '#888', fontStyle: 'italic' }}>จัดการเรียบร้อยแล้ว</span>
+              )}
+            </div>
 
-                  <div style={{ flex: 1.5, textAlign: 'center' }}>
-                    <span className="status-badge" style={{ ...getStatusStyle(item.status), padding: '0.4rem 0.8rem', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.85rem' }}>
-                      {item.status}
-                    </span>
-                  </div>
+            <div style={{ flex: 1.5, textAlign: 'center' }}>
+              <span className="status-badge" style={{ ...getStatusStyle(item.status), padding: '0.4rem 0.8rem', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.85rem' }}>
+                {item.status}
+              </span>
+            </div>
 
-                  <div style={{ flex: 1.2, textAlign: 'center', fontWeight: '500' }}>{item.timeSlot || item.time}</div>
-                  <div style={{ flex: 1.2, textAlign: 'center' }}>{item.bookingDate || item.date}</div>
-                  
-                  <div style={{ flex: 2.8, textAlign: 'left', paddingLeft: '1rem' }}>
-                    <strong style={{ color: '#333' }}>{item.facilityName || item.facility}</strong><br/>
-                    <span style={{ fontSize: '0.85rem', color: '#0056B3' }}>{item.roomName || item.room}</span>
-                    {item.rejectReason && (
-                      <div style={{ fontSize: '0.8rem', color: '#E31B23', marginTop: '0.3rem', backgroundColor: '#FFF0F0', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
-                        ❌ เหตุผล: {item.rejectReason}
-                      </div>
-                    )}
-                  </div>
 
-                  <div style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', color: '#555' }}>{item.type}</div>
-                  <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem' }}>
-                    <strong style={{ color: '#333' }}>{studentDisplayName}</strong><br/>
-                    <span style={{ fontSize: '0.85rem', color: '#666', fontFamily: 'monospace' }}>ID: {item.studentId}</span>
-                  </div>
+            <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold', color: '#333', fontFamily: 'monospace', fontSize: '1rem' }}>
+              {item.bookingCode || 'N/A'}
+            </div>
+
+            <div style={{ flex: 1.2, textAlign: 'center', fontWeight: '500' }}>{item.timeSlot || item.time}</div>
+            
+            <div style={{ flex: 1.2, textAlign: 'center' }}>{item.bookingDate || item.date}</div>
+            
+            <div style={{ flex: 2.8, textAlign: 'left', paddingLeft: '1rem' }}>
+              <strong style={{ color: '#333' }}>{item.facilityName || item.facility}</strong><br/>
+              <span style={{ fontSize: '0.85rem', color: '#0056B3' }}>{item.roomName || item.room}</span>
+              {item.rejectReason && (
+                <div style={{ fontSize: '0.8rem', color: '#E31B23', marginTop: '0.3rem', backgroundColor: '#FFF0F0', padding: '0.2rem 0.5rem', borderRadius: '4px' }}>
+                  ❌ เหตุผล: {item.rejectReason}
                 </div>
-              );
-            })
-          ) : (
-            <p style={{ textAlign: 'center', padding: '4rem', color: '#999', fontStyle: 'italic' }}>ไม่พบลำดับคิวการจองที่ตรงตามเงื่อนไขการค้นหาของคุณ</p>
-          )}
-        </div>
-      )}
+              )}
+            </div>
 
-      {/* ======================================================== */}
-      {/* 🎁 แท็บระบบที่ 2: ตารางประวัติการแลกของรางวัลฝั่งอาจารย์แอดมิน */}
-      {/* ======================================================== */}
+            <div style={{ flex: 1, textAlign: 'center', fontWeight: 'bold', color: '#555' }}>{item.type}</div>
+
+            <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem' }}>
+              <strong style={{ color: '#333' }}>{studentDisplayName}</strong><br/>
+              <span style={{ fontSize: '0.85rem', color: '#666', fontFamily: 'monospace' }}>ID: {item.studentId}</span>
+            </div>
+
+          </div>
+        );
+      })
+    ) : (
+      <p style={{ textAlign: 'center', padding: '4rem', color: '#999', fontStyle: 'italic' }}>ไม่พบลำดับคิวการจองที่ตรงตามเงื่อนไขการค้นหาของคุณ</p>
+    )}
+  </div>
+)}
+
+   
       {viewMode === 'rewards' && (
         <>
-          {/* แผงปุ่มฟิลเตอร์ย่อยของรางวัล */}
+
           <div className="filter-button-group" style={{ display: 'flex', gap: '8px', marginBottom: '1.2rem' }}>
             {['ทั้งหมด', 'ยังไม่ใช้งาน', 'ใช้งานแล้ว'].map((status) => (
               <button
@@ -356,11 +356,11 @@ function AdminBookings() {
               <div style={{ flex: 2.0, textAlign: 'center', fontWeight: 'bold' }}>Ticket Code (รหัสตั๋ว)</div>
               <div style={{ flex: 1.2, textAlign: 'center', fontWeight: 'bold' }}>คะแนนที่ใช้</div>
               <div style={{ flex: 3.5, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold' }}>ของรางวัลที่แลก</div>
-              <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold' }}>ผู้ใช้สิทธิ์ (นศ.)</div>
+              <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold' }}>ผู้ใช้สิทธิ์</div>
             </div>
 
             {loadingRewards ? (
-              <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังดึงข้อมูลประวัติของรางวัลจาก MongoDB...</p>
+              <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังดึงข้อมูลประวัติของรางวัลจาก</p>
             ) : filteredRewards.length > 0 ? (
               filteredRewards.map(reward => (
                 <div key={reward._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1.2rem 1rem', borderBottom: '1px solid #EEE', backgroundColor: '#FFF' }}>
@@ -413,7 +413,6 @@ function AdminBookings() {
         </>
       )}
 
-      {/* MODAL ระบุเหตุผลปฏิเสธการจองคิว */}
       {isRejectModalOpen && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
           <div className="modal-content" style={{ maxWidth: '450px', backgroundColor: '#FFF', padding: '2rem', borderRadius: '8px', width: '100%' }}>

@@ -1,15 +1,13 @@
 import mongoose from 'mongoose';
-import Reward from './models/Reward.js'; // เช็คพาร์ทไฟล์ Model ดีๆ ว่าตรงไหม
+import Reward from './models/Reward.js';
 
-// 1. เชื่อมต่อฐานข้อมูล MongoDB (อิงตามเซิร์ฟเวอร์หลักของมึง)
 mongoose.connect('mongodb://127.0.0.1:27017/tu_booking')
-  .then(() => console.log('✅ [Seed] เชื่อมต่อ MongoDB สำเร็จ! กำลังล้างและลงข้อมูล...'))
+  .then(() => console.log('เชื่อมต่อ MongoDB สำเร็จ! กำลังล้างและลงข้อมูล...'))
   .catch((err) => {
     console.error('❌ [Seed] เชื่อมต่อ MongoDB ล้มเหลว:', err);
     process.exit(1);
   });
 
-// 2. เตรียมชุดข้อมูลของรางวัลที่จะเอาเข้าฐานข้อมูล
 const rewardsData = [
   {
     name: 'น้ำดื่ม TU',
@@ -41,23 +39,19 @@ const rewardsData = [
   }
 ];
 
-// 3. ฟังก์ชันหลักในการยัดข้อมูลลง DB
 const seedDB = async () => {
   try {
-    // ล้างข้อมูลเก่าในคอลเลกชัน Reward ออกก่อน (กันข้อมูลซ้ำซ้อนตอนรันซ้ำ)
     await Reward.deleteMany({});
-    console.log('🗑️ ล้างข้อมูลเก่าในคอลเลกชัน Reward เรียบร้อย');
+    console.log('ล้างข้อมูลเก่าในคอลเลกชัน Reward เรียบร้อย');
 
-    // ยัดข้อมูลใหม่ทั้งหมดเข้าไปรวดเดียว
     await Reward.insertMany(rewardsData);
-    console.log('🎉 เสกข้อมูลของรางวัลเข้า MongoDB สำเร็จครบถ้วนแล้วเพื่อน!');
+    console.log('เอาข้อมูลลงสำเร็จ');
     
-    // รันเสร็จแล้วปิดการเชื่อมต่อฐานข้อมูล
     mongoose.connection.close();
-    console.log('🔌 ปิดการเชื่อมต่อฐานข้อมูลเรียบร้อย');
+    console.log('ปิดการเชื่อมต่อฐานข้อมูลเรียบร้อย');
     process.exit(0);
   } catch (error) {
-    console.error('❌ เกิดข้อผิดพลาดในการ Seed ข้อมูล:', error);
+    console.error('เกิดข้อผิดพลาดในการ Seed ข้อมูล:', error);
     mongoose.connection.close();
     process.exit(1);
   }

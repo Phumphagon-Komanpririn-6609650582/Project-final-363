@@ -9,7 +9,6 @@ const bookingSchema = new mongoose.Schema({
   timeSlot: { type: String, required: true },
   type: { type: String, required: true }, 
   bookingCode: { type: String, required: true }, 
-  // 👉 ปลดบล็อกลิสต์คำใน Enum ตรงนี้เพื่อให้รองรับระบบ แบน/ลงโทษ ที่เราเพิ่งเขียนไปเรียบร้อยแล้ว
   status: { 
     type: String, 
     enum: ['รอการเช็คอิน', 'เช็คอินเรียบร้อย', 'ปฏิเสธการจอง', 'ไม่มาตามนัด', 'ยกเลิกแล้ว'], 

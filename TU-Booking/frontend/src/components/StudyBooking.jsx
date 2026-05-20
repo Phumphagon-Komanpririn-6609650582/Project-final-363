@@ -10,11 +10,9 @@ function StudyBooking({ onBack, user }) {
     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
-  // 1. แยก fetch ออกมาเป็น useCallback เพื่อเรียกซ้ำหลังจองเสร็จ
   const fetchPueyLibraryRooms = useCallback(async () => {
     try {
       setLoading(true);
-      // ส่ง date ไปให้หลังบ้านเช็คสถานะว่างจริงจากตาราง bookings ด้วย
       const response = await fetch(`http://localhost:4000/api/facilities?type=Study&date=${selectedDate}`);
       const data = await response.json();
 
@@ -29,7 +27,7 @@ function StudyBooking({ onBack, user }) {
         type: room.type, 
         slots: room.slots.map(slot => ({
           time: slot.time,
-          isAvailable: slot.isAvailable // 👉 รับค่าที่คำนวณมาจากหลังบ้าน (แดง/เขียว)
+          isAvailable: slot.isAvailable
         }))
       }));
 
@@ -45,43 +43,36 @@ function StudyBooking({ onBack, user }) {
     fetchPueyLibraryRooms();
   }, [fetchPueyLibraryRooms]);
 
-  // 👉 อัปเดตฟังก์ชันดักการกดสล็อตเวลาที่ผ่านมาแล้ว ให้ยืดหยุ่นและปลอดภัยจากบั๊กปี ค.ศ.
   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
-    // 1. เช็คว่ามีคนจองไปแล้วหรือยัง
     if (!isAvailable) {
       alert("⚠️ ช่วงเวลานี้ถูกจองไปแล้วครับ!");
       return;
     }
 
-    // 2. 🛡️ เช็คว่าเวลาที่จะจอง มันเลยเวลาปัจจุบันไปหรือยัง
     try {
       const [d, m, y] = selectedDate.split('/');
       let year = parseInt(y);
       
-      // แปลงปี พ.ศ. ให้เป็น ค.ศ. สำหรับใช้ใน Object Date ของ JavaScript (ปรับเงื่อนไขให้รัดกุม)
       if (year < 100) {
-        year = year + 2500 - 543; // กรณีมาเป็นปี 2 หลัก เช่น 69 -> 2569 -> 2026
+        year = year + 2500 - 543;
       } else if (year > 2500) {
-        year = year - 543; // กรณีมาเป็นปี พ.ศ. 4 หลัก เช่น 2569 -> 2026
+        year = year - 543;
       }
 
-      // แปลงเวลาเริ่มต้น (เช่น "09:00 - 11:00" ดึงออกมาแค่ "09:00")
       const startTime = time.split('-')[0].trim();
       const [hh, mm] = startTime.split(':');
 
       const slotDateTime = new Date(year, parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm));
       const now = new Date();
 
-      // ถ้าเวลาสล็อตน้อยกว่าเวลาปัจจุบัน = อดีต (บล็อกทันที)
       if (slotDateTime < now) {
-        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้วครับเพื่อน!");
+        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้ว!");
         return; 
       }
     } catch (error) {
       console.error("Error parsing date/time validation:", error);
     }
 
-    // ถ้าผ่านเงื่อนไขทั้งหมด ค่อยเปิด Modal ยืนยันการจอง
     setSelectedBooking({ roomId, roomName, time, date: selectedDate });
     setIsModalOpen(true);
   };
@@ -91,9 +82,9 @@ function StudyBooking({ onBack, user }) {
     const currentRoom = rooms.find(r => r.id === roomId);
 
     const bookingData = {
-      studentId: user?.studentId || "6609650582",
+      studentId: user?.studentId,
       facilityId: roomId,      
-      facilityName: currentRoom?.title || "Puey Ungphakorn Library",
+      facilityName: currentRoom?.title,
       roomName: currentRoom?.name || roomName,
       bookingDate: date,        
       timeSlot: time,
@@ -111,7 +102,6 @@ function StudyBooking({ onBack, user }) {
 
       if (response.ok) {
         alert('🎉 จองสำเร็จ!');
-        // 👉 สั่ง Refresh ข้อมูลใหม่ทันที ปุ่มจะเปลี่ยนเป็นสีแดง (Unavailable) ให้เอง!
         fetchPueyLibraryRooms(); 
       } else {
         alert(result.message || 'เกิดข้อผิดพลาดในการจอง');
@@ -150,7 +140,7 @@ function StudyBooking({ onBack, user }) {
                   src={room.img} 
                   alt={room.name} 
                   className="court-thumbnail" 
-                  onError={(e) => { e.target.onerror = null; e.target.src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=200&auto=format&fit=crop" }} // ดักรูปพัง
+                  onError={(e) => { e.target.onerror = null; e.target.src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=200&auto=format&fit=crop" }}
                 />
                 <div className="court-info">
                   <h4>{room.name}</h4>

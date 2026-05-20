@@ -23,7 +23,7 @@ function AdminReports() {
     fetchReports();
   }, []);
 
-  // ฟังก์ชันกดปิดงานซ่อม เปลี่ยนสเตตจาก pending -> resolved
+  // ฟังก์ชันกดปิดงานซ่อม
   const handleResolve = async (id) => {
     if (window.confirm('ซ่อมแซมเสร็จสิ้นแล้วใช่หรือไม่?')) {
       try {
@@ -33,23 +33,6 @@ function AdminReports() {
           body: JSON.stringify({ status: 'resolved' })
         });
         if (response.ok) {
-          fetchReports(); // โหลดข้อมูลตารางใหม่สดๆ
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  };
-
-  // ฟังก์ชันลบประวัติใบแจ้งซ่อมเด็ดขาดออกจากระบบ
-  const handleDelete = async (id) => {
-    if (window.confirm('คุณต้องการลบประวัติการแจ้งซ่อมนี้ออกจากฐานข้อมูลเด็ดขาดใช่หรือไม่?')) {
-      try {
-        const response = await fetch(`http://localhost:4000/api/reports/admin/delete/${id}`, {
-          method: 'DELETE'
-        });
-        if (response.ok) {
-          alert('🗑️ ลบประวัติใบแจ้งซ่อมเรียบร้อยแล้วครับเพื่อน!');
           fetchReports();
         }
       } catch (error) {
@@ -58,12 +41,29 @@ function AdminReports() {
     }
   };
 
-  // แมปปิ้งสีป้ายสถานะปัจจุบัน (มีแค่ รอดำเนินการ กับ ซ่อมเสร็จแล้ว)
+  // ฟังก์ชันลบประวัติแจ้งซ่อม
+  const handleDelete = async (id) => {
+    if (window.confirm('คุณต้องการลบประวัติการแจ้งซ่อมนี้ออกจากฐานข้อมูลใช่หรือไม่?')) {
+      try {
+        const response = await fetch(`http://localhost:4000/api/reports/admin/delete/${id}`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          alert('🗑️ ลบประวัติแจ้งซ่อมเรียบร้อยแล้ว!');
+          fetchReports();
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  // แมปปิ้งสีป้ายสถานะปัจจุบัน
   const getStatusMeta = (status) => {
     if (status === 'resolved') {
-      return { text: 'ซ่อมเสร็จแล้ว', color: '#8BE3A8', textColor: '#0E431F' }; // ป้ายเขียว
+      return { text: 'ซ่อมเสร็จแล้ว', color: '#8BE3A8', textColor: '#0E431F' };
     }
-    return { text: 'รอดำเนินการ', color: '#FFB3B3', textColor: '#610F0F' }; // ป้ายแดง
+    return { text: 'รอดำเนินการ', color: '#FFB3B3', textColor: '#610F0F' };
   };
 
   return (
@@ -72,7 +72,7 @@ function AdminReports() {
         <div>
           <h1 className="admin-page-title" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', margin: 0 }}>🔧 รับเรื่องแจ้งซ่อมบำรุง</h1>
           <p className="admin-page-subtitle" style={{ color: '#666', marginTop: '0.5rem', marginBottom: 0 }}>
-            จัดการปัญหาของชำรุดเสียหายที่นักศึกษารายงานเข้ามา จัดลำดับ และอัปเดตสถานะงานซ่อมบำรุง
+            จัดการปัญหาของชำรุดเสียหายที่นักศึกษารายงานเข้ามา
           </p>
         </div>
       </div>
@@ -84,11 +84,11 @@ function AdminReports() {
           <div style={{ flex: 1.2, textAlign: 'center' }}>วันที่แจ้ง</div>
           <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem' }}>สถานที่ / ห้อง / สนาม</div>
           <div style={{ flex: 4.5, textAlign: 'left', paddingLeft: '1rem' }}>รายละเอียดปัญหาที่พบชำรุด</div>
-          <div style={{ flex: 2.0, textAlign: 'center' }}>ผู้แจ้ง (Email นศ.)</div>
+          <div style={{ flex: 2.0, textAlign: 'center' }}>ผู้แจ้ง</div>
         </div>
 
         {loading ? (
-          <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังโหลดข้อมูลรายงานสิ่งชำรุดเสียหายจาก MongoDB...</p>
+          <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังโหลดข้อมูลรายงานสิ่งชำรุดเสียหาย</p>
         ) : reports.length > 0 ? (
           reports.map(item => {
             const meta = getStatusMeta(item.status);
@@ -96,10 +96,8 @@ function AdminReports() {
             return (
               <div key={item._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1.2rem 1rem', borderBottom: '1px solid #EEE', cursor: 'default' }}>
                 
-                {/* 🛠️ ปรับสีปุ่ม Action ใหม่ตามบรีฟ ไม่ให้สับสนกับป้ายสถานะ */}
                 <div style={{ flex: 1.8, textAlign: 'center', display: 'flex', justifyContent: 'center' }}>
                   {item.status === 'pending' ? (
-                    // ใช้สีส้ม/เหลืองงานช่าง ให้ดูเป็นปุ่มกดสั่งการ "คลิกเมื่อซ่อมเสร็จ"
                     <button 
                       className="admin-action-btn" 
                       style={{ backgroundColor: '#F5A623', color: '#FFF', border: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem', width: '110px' }} 
@@ -108,7 +106,6 @@ function AdminReports() {
                       <i className="fa-solid fa-wrench"></i> กำลังดำเนินการ
                     </button>
                   ) : (
-                    // ซ่อมเสร็จแล้ว ปรับปุ่มเป็นสีแดงสำหรับลบประวัติเคลียร์แถวออก
                     <button 
                       className="admin-action-btn delete" 
                       style={{ backgroundColor: '#E31B23', color: '#FFF', border: 'none', padding: '0.45rem 0.9rem', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem', width: '110px' }} 
@@ -119,7 +116,6 @@ function AdminReports() {
                   )}
                 </div>
 
-                {/* ป้ายแสดงสถานะปัจจุบัน */}
                 <div style={{ flex: 1.5, textAlign: 'center' }}>
                   <span className="status-badge" style={{ backgroundColor: meta.color, color: meta.textColor, padding: '0.4rem 0.8rem', borderRadius: '20px', fontWeight: 'bold', fontSize: '0.85rem', display: 'inline-block', minWidth: '90px' }}>
                     {meta.text}
@@ -130,8 +126,13 @@ function AdminReports() {
                   {item.date}
                 </div>
 
-                <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem', fontWeight: 'bold', color: '#333' }}>
-                  {item.facilityName}
+                <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem' }}>
+                  <span style={{ fontWeight: 'bold', color: '#333' }}>{item.facilityName}</span>
+                  {item.roomName && (
+                    <div style={{ fontSize: '0.85rem', color: '#0056B3', marginTop: '0.2rem' }}>
+                      ห้องย่อย: <strong>{item.roomName}</strong>
+                    </div>
+                  )}
                 </div>
 
                 <div style={{ flex: 4.5, textAlign: 'left', paddingLeft: '1rem', color: item.status === 'pending' ? '#E31B23' : '#444', fontWeight: '500', fontStyle: item.status === 'resolved' ? 'italic' : 'normal' }}>
@@ -148,7 +149,7 @@ function AdminReports() {
         ) : (
           <div style={{ padding: '4rem', textAlign: 'center', color: '#999' }}>
             <i className="fa-solid fa-clipboard-check" style={{ fontSize: '3rem', marginBottom: '1rem', color: '#CCC' }}></i>
-            <p>ยอดเยี่ยมชิหาย! ไม่มีรายการของพังค้างอยู่ในฐานข้อมูลเลยครับเพื่อน</p>
+            <p>ไม่มีรายการชำรุด</p>
           </div>
         )}
       </div>

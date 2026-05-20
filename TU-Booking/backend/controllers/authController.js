@@ -1,4 +1,4 @@
-import User from '../models/User.js'; // นำเข้า Model ที่เราสร้างไว้
+import User from '../models/User.js';
 
 export const login = async (req, res) => {
     const { username, password } = req.body;
@@ -21,31 +21,28 @@ export const login = async (req, res) => {
 
         const result = await response.json();
 
-        // 2. ตรวจสอบเงื่อนไขผลลัพธ์จาก TU REST API
         if (response.ok && result.status === true) {
             const apiEmail = result.data.email.toLowerCase();
             const inputUsername = username.toLowerCase();
 
             if (inputUsername === apiEmail) {
                 
-                const stdId = result.data.userName; // ดึงรหัสนักศึกษาออกมาจากก้อน API มหาลัย
+                const stdId = result.data.userName;
                 
-                // ----------------------------------------------------------------
-                // 3. เริ่มต้นทำระบบตรวจสอบร่วมกับ MongoDB ข้อมูลส่วนตัวของเรา
-                // ----------------------------------------------------------------
+                
                 let user = await User.findOne({ studentId: stdId });
 
-                // 👉 ลอจิกสำคัญ: หากเป็นการเข้าสู่ระบบครั้งแรก (ไม่เจอใน DB) ให้บันทึกข้อมูลใหม่ลงไปทันที
+                //หากเป็นการเข้าสู่ระบบครั้งแรก ให้บันทึกข้อมูลใหม่ลงไปทันที
                 if (!user) {
                     user = await User.create({
                         studentId: stdId,
                         name: result.data.displayname_th,
-                        role: 'student', // ทุกคนที่เข้ามาครั้งแรกเป็น Student เสมอตามแผน
-                        points: 150      // แต้มสะสมตั้งต้น
+                        role: 'student', 
+                        points: 0     
                     });
                 }
 
-                // 👉 ลอจิกเพิ่มเติม: หากผู้ใช้งานคนนี้ติดสถานะ "ถูกระงับสิทธิ์ (แบน)" อยู่ ไม่ให้ผ่านเข้าระบบจอง
+            
                 if (user.banUntil) {
                     const today = new Date();
                     if (today <= user.banUntil) {
@@ -55,13 +52,13 @@ export const login = async (req, res) => {
                     }
                 }
 
-                // 4. ข้อมูลถูกต้องและผ่านเงื่อนไขทั้งหมด ส่งข้อมูลผสมกลับไปให้ฝั่ง React หน้าบ้านทำงาน
+            
                 return res.status(200).json({
                     message: 'Login สำเร็จ',
                     user: {
                         studentId: user.studentId,
                         name: user.name,
-                        role: user.role, // 👉 บรรทัดนี้แหละที่จะส่งค่า 'student' หรือ 'admin' ไปบอก React
+                        role: user.role, 
                         points: user.points
                     }
                 });

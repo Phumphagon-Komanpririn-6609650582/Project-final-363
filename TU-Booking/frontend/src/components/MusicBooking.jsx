@@ -10,7 +10,6 @@ function MusicBooking({ onBack, user }) {
     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
-  // 📥 1. ดึงข้อมูลและกรองเฉพาะหมวดหมู่ Music ผ่านท่อหลัก type=Karaoke ตามพิมพ์เขียว
   const fetchMusicRooms = useCallback(async () => {
     try {
       setLoading(true);
@@ -21,7 +20,6 @@ function MusicBooking({ onBack, user }) {
         throw new Error(data.message || 'ดึงข้อมูลจากเซิร์ฟเวอร์ล้มเหลว');
       }
 
-      // 🎯 กรองเอาเฉพาะห้องที่เป็นโซนดนตรี Music ตามข้อกำหนดเงื่อนไข
       const musicData = data.filter(item => 
         item.name?.toLowerCase().includes('music') ||
         item.room?.toLowerCase().includes('music')
@@ -52,15 +50,12 @@ function MusicBooking({ onBack, user }) {
     fetchMusicRooms();
   }, [fetchMusicRooms]);
 
-  // 🛡️ 2. เช็คเวลาสล็อตที่ผ่านมาแล้ว ลอกลอจิกพิมพ์เขียวเป๊ะๆ ปลอดภัยเรื่อง พ.ศ./ค.ศ.
   const handleSlotClick = (roomId, roomName, time, isAvailable) => {
-    // 1. เช็คว่ามีคนจองไปแล้วหรือยัง
     if (!isAvailable) {
       alert("⚠️ ช่วงเวลานี้ถูกจองไปแล้วครับ!");
       return;
     }
 
-    // 2. เช็คว่าเวลาที่จะจอง มันเลยเวลาปัจจุบันไปหรือยัง
     try {
       const [d, m, y] = selectedDate.split('/');
       let year = parseInt(y);
@@ -78,27 +73,25 @@ function MusicBooking({ onBack, user }) {
       const now = new Date();
 
       if (slotDateTime < now) {
-        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้วครับเพื่อน!");
+        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้ว!");
         return; 
       }
     } catch (error) {
       console.error("Error parsing date/time validation:", error);
     }
 
-    // ถ้าผ่านเงื่อนไขทั้งหมด ค่อยเปิด Modal ยืนยันการจอง
     setSelectedBooking({ roomId, roomName, time, date: selectedDate });
     setIsModalOpen(true);
   };
 
-  // 💾 3. ยืนยันบันทึกข้อมูลใบจอง
   const confirmBooking = async () => {
     const { roomId, roomName, time, date } = selectedBooking;
     const currentRoom = rooms.find(r => r.id === roomId);
 
     const bookingData = {
-      studentId: user?.studentId || "6609650582",
+      studentId: user?.studentId,
       facilityId: roomId,      
-      facilityName: currentRoom?.title || "Melody Sphere Zone Music",
+      facilityName: currentRoom?.title,
       roomName: currentRoom?.name || roomName,
       bookingDate: date,        
       timeSlot: time,
@@ -186,7 +179,6 @@ function MusicBooking({ onBack, user }) {
             <button className="close-btn" onClick={() => setIsModalOpen(false)}>×</button>
             <h2 className="modal-title">ยืนยันการจอง</h2>
             <div className="modal-icon">
-              {/* 🎯 สลับใช้ไอคอนเครื่องดนตรีสำหรับหน้าซ้อมดนตรีโดยเฉพาะตามเนื้อหา */}
               <i className="fa-solid fa-guitar" style={{ fontSize: '4rem', color: '#333', margin: '1rem 0' }}></i>
             </div>
             <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>SPOT : {selectedBooking?.roomName}</h3>

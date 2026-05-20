@@ -12,7 +12,6 @@ function Navbar() {
     { name: 'การจองของฉัน', icon: 'fa-solid fa-list-ul', path: '/my-booking' },
   ];
 
-  // รายการหน้าลูก ที่ต้องการให้ปุ่ม "หน้าหลัก" ยังคงสว่าง (Active) อยู่
   const homeSubPages = [
     '/sport', 
     '/tennis_court', 
@@ -24,9 +23,7 @@ function Navbar() {
     '/krom_luang_booking'
   ];
 
-  // ฟังก์ชันจำลองการออกจากระบบ
   const handleLogout = () => {
-    // ล้างข้อมูลใน localStorage แล้วรีเฟรชหน้าเพื่อกลับไปหน้า Login
     localStorage.clear();
     window.location.href = '/';
   };
@@ -34,17 +31,13 @@ function Navbar() {
   return (
     <nav className="navbar-container" style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
 
-      {/* --- ส่วนโลโก้ --- */}
       <div className="logo-section">
         <div className="logo-circle"><span className="logo-text">TU</span></div>
         <h2 className="brand-name">TU-BOOKING</h2>
       </div>
 
-      {/* --- ส่วนเมนู --- */}
       <div className="menu-list" style={{ flex: 1 }}>
         {menus.map((menu) => {
-          // เช็คว่า URL ปัจจุบัน ตรงกับ path ของเมนูนี้หรือไม่ 
-          // หรือถ้าเป็นเมนู 'หน้าหลัก' (/) ให้เช็คด้วยว่าอยู่ในหน้าลูกๆ หรือเปล่า
           const isActive = location.pathname === menu.path || 
                            (menu.path === '/' && homeSubPages.includes(location.pathname));
 
@@ -62,7 +55,6 @@ function Navbar() {
         })}
       </div>
 
-      {/* --- ส่วนล่างสุด: ปุ่มออกจากระบบ --- */}
       <div className="nav-footer" style={{ padding: '1.5rem' }}>
         <button 
           onClick={handleLogout}

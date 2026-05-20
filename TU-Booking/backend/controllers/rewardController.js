@@ -1,17 +1,17 @@
 import Reward from '../models/Reward.js';
 
-// 1. ดึงของรางวัลทั้งหมดที่มีในระบบ
+//ดึงของรางวัลทั้งหมด
 export const getAllRewards = async (req, res) => {
   try {
-    const rewards = await Reward.find().sort({ points: 1 }); // เรียงจากแต้มน้อยไปมาก
+    const rewards = await Reward.find().sort({ points: 1 });
     res.status(200).json(rewards);
   } catch (error) {
     console.error('❌ Error fetching rewards:', error);
-    res.status(500).json({ message: 'เซิร์ฟเวอร์ขัดข้อง ไม่สามารถดึงของรางวัลได้' });
+    res.status(500).json({ message: 'เซิร์ฟเวอร์ขัดข้อง ไม่สามารถดึงข้อมูลได้' });
   }
 };
 
-// 2. ฟังก์ชันแถม: เพิ่มของรางวัลใหม่ (เผื่อมึงเอาไว้ใช้ยิงผ่าน Postman เพื่อเพิ่มของลง DB)
+//ฟังก์ชันเพิ่มของรางวัล
 export const createReward = async (req, res) => {
   try {
     const { name, points, category, icon, img, color } = req.body;

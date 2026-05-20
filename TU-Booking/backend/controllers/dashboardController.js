@@ -4,21 +4,21 @@ import Report from '../models/Report.js';
 
 export const getDashboardAnalytics = async (req, res) => {
   try {
-    // 🎯 1. การจองทั้งหมดในระบบ (ยกเว้นอันที่กดยกเลิกทิ้ง)
+    //ดึงการจองทั้งหมดในระบบ ยกเว้นอันที่กดยกเลิกทิ้ง
     const totalBookings = await Booking.countDocuments({ status: { $ne: 'ยกเลิกแล้ว' } }); 
     
-    // 🎯 2. นับเฉพาะการจองที่ "อนุมัติ / เช็คอินเรียบร้อย" จริงๆ
+    // นับเฉพาะการจองที่ "อนุมัติ / เช็คอินเรียบร้อย"
     const approvedBookings = await Booking.countDocuments({ status: 'เช็คอินเรียบร้อย' });
 
-    // 🎯 3. สถิติตัวนับอื่นๆ ในระบบ
+    // สถิติตัวนับอื่นๆ ในระบบ
     const activeUsers = await User.countDocuments({ role: 'student' });
     const pendingApprovals = await Booking.countDocuments({ status: 'รอการเช็คอิน' }); 
     const pendingReports = await Report.countDocuments({ status: 'pending' });
 
-    // 🎯 4. [จุดที่แก้ไขบั๊กหลัก!] กราฟสถานที่ยอดฮิต -> ปรับมานับจาก "การจองทั้งหมด" ไม่คัดกรองแค่เช็คอินเรียบร้อยแล้วเพื่อน!
+
     const facilityAnalytics = await Booking.aggregate([
       { 
-        $match: { status: { $ne: 'ยกเลิกแล้ว' } } // 🔥 แก้ตรงนี้! นับรวมทุกคิวที่เด็กส่งคำขอเข้ามา (ไม่รวมคิวยกเลิก)
+        $match: { status: { $ne: 'ยกเลิกแล้ว' } } 
       },
       { $group: { _id: '$facilityName', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
@@ -33,7 +33,7 @@ export const getDashboardAnalytics = async (req, res) => {
     }));
 
 
-    // 🎯 5. กราฟช่วงเวลายอดฮิต -> นับจาก "การจองทั้งหมด" (ยกเว้นรายการยกเลิก) สอดคล้องกันเป๊ะ
+    // กราฟช่วงเวลายอดฮิต
     const timeAnalytics = await Booking.aggregate([
       { 
         $match: { status: { $ne: 'ยกเลิกแล้ว' } } 
@@ -50,7 +50,6 @@ export const getDashboardAnalytics = async (req, res) => {
       percentage: Math.round((item.count / maxTimeCount) * 100)
     }));
 
-    // ส่งชุดข้อมูลตัวเลขที่บาลานซ์กันทั้ง 2 ฝั่งกลับไปหน้าบ้าน
     res.status(200).json({
       overview: {
         totalBookings,

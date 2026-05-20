@@ -18,7 +18,6 @@ import StudyBooking from './components/StudyBooking';
 import KromLuangBooking from './components/KromLuangBooking';
 import Rewards from './components/Rewards';
 import MyBooking from './components/MyBooking'; 
-
 import AdminDashboard from './components/admin/AdminDashboard';
 import AdminFacilities from './components/admin/AdminFacilities';
 import AdminNavbar from './components/admin/AdminNavbar'; 
@@ -66,7 +65,6 @@ function App() {
               <SportSelection 
                 onBack={() => navigate('/')} 
                 onSelectCourt={(courtType) => {
-                  // 👉 แก้คำผิดตรงนี้! Inrerzone -> Interzone
                   if (courtType === 'Tennis Court') navigate('/tennis_court');
                   if (courtType === 'Badminton Court Interzone') navigate('/badminton_court_interzone');
                   if (courtType === 'Badminton Court Gym 4') navigate('/badminton_court_gym_4');
@@ -75,7 +73,6 @@ function App() {
             } />
             <Route path="/tennis_court" element={<TennisCourt onBack={() => navigate('/sport')} user={currentUser} />} />
             
-            {/* 👉 แก้ Path ตรงนี้ให้ตรงกับข้างบนด้วย */}
             <Route path="/badminton_court_interzone" element={<BadmintonCourtInterzone onBack={() => navigate('/sport')} user={currentUser} />} />
             <Route path="/badminton_court_gym_4" element={<BadmintonCourtGym4 onBack={() => navigate('/sport')} user={currentUser} />} />
           

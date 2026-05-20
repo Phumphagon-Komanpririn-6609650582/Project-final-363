@@ -7,7 +7,6 @@ function Rewards({ points, setPoints }) {
   const [rewardItems, setRewardItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ดึงรหัสนักศึกษาจาก localStorage เพื่อใช้ระบุตัวตน
   const studentId = localStorage.getItem('studentId') || "6609650582";
 
   useEffect(() => {
@@ -33,11 +32,9 @@ function Rewards({ points, setPoints }) {
     setIsModalOpen(true);
   };
 
-  // 👉 แก้ไขตรรกะใหม่ ส่งข้อมูลชุดเล็กไป แล้วรอรับ Ticket Code ที่หลังบ้านสุ่มให้
   const confirmRedeem = async () => {
     if (points < selectedItem.points) return;
 
-    // 🛡️ ปลอดภัย 100%: ส่งไปแค่ ID ผู้ใช้กับ ID ของรางวัล ที่เหลือให้หลังบ้านตรวจสอบและจัดการเอง
     const redeemData = {
       studentId: studentId,
       rewardId: selectedItem._id || selectedItem.id
@@ -53,12 +50,8 @@ function Rewards({ points, setPoints }) {
       const result = await response.json();
 
       if (response.ok) {
-        // 1. อัปเดตสถานะแต้มคงเหลือใหม่ที่หักคำนวณมาจากฐานข้อมูลจริง
         setPoints(result.newPoints); 
-        
-        // 2. 🎟️ เอารหัสตั๋วสิทธิ์รับรางวัลที่เสกมาจากหลังบ้าน (Backend) มาเซ็ตโชว์ใน Popup
         setTicketCode(result.ticketCode); 
-        
         setIsModalOpen(false);
       } else {
         alert(result.message || 'เกิดข้อผิดพลาดในการแลกของรางวัล');
@@ -118,7 +111,6 @@ function Rewards({ points, setPoints }) {
         </div>
       )}
 
-      {/* --- Popup ที่ 1: ถามเพื่อยืนยันการหักแต้ม --- */}
       {isModalOpen && selectedItem && (
         <div className="modal-overlay" onClick={() => setIsModalOpen(false)}> 
           <div className="modal-content" onClick={(e) => e.stopPropagation()}> 
@@ -157,7 +149,6 @@ function Rewards({ points, setPoints }) {
         </div>
       )}
 
-      {/* --- Popup ที่ 2: โชว์ตั๋วรหัส 6 หลักที่รับมาจากหลังบ้านให้พนักงานดู --- */}
       {ticketCode && (
         <div className="modal-overlay">
           <div className="modal-content" style={{ textAlign: 'center' }}>

@@ -1,12 +1,11 @@
 import Facility from '../models/Facility.js';
 import Booking from '../models/Booking.js';
 
-// 1. 🛡️ สำหรับ User: ดึงข้อมูลสถานที่พร้อมเช็คสถานะการจอง (กรองเอาเฉพาะห้องที่ "เปิดให้บริการ")
+//ดึงข้อมูลสถานที่พร้อมเช็คสถานะการจอง กรองเอาเฉพาะห้องที่ "เปิดให้บริการ"
 export const getAllFacilities = async (req, res) => {
   try {
     const { type, date } = req.query; 
     
-    // 👉 ดักกรองตั้งแต่ระดับ Query เลย: ฝั่ง User ทั่วไปจะเห็นเฉพาะห้องที่สถานะ 'เปิดให้บริการ' เท่านั้น!
     let query = { status: 'เปิดให้บริการ' };
     
     if (type) {
@@ -15,7 +14,6 @@ export const getAllFacilities = async (req, res) => {
 
     const facilities = await Facility.find(query);
     
-    // ดึงการจองทั้งหมดของวันที่เลือก
     const bookings = date 
       ? await Booking.find({ bookingDate: date, status: { $ne: 'ยกเลิกแล้ว' } })
       : await Booking.find({ status: { $ne: 'ยกเลิกแล้ว' } });
@@ -44,19 +42,18 @@ export const getAllFacilities = async (req, res) => {
   }
 };
 
-// 2. 👑 สำหรับ Admin: ดึงข้อมูลสถานที่ทั้งหมด (เห็นทุกห้อง ทุกสถานะ เพื่อเอาไปเปิด/ปิดระบบ)
+//สำหรับ Admin ดึงข้อมูลสถานที่ทั้งหมด เพื่อเอาไปเปิด/ปิดระบบ
 export const getAdminFacilities = async (req, res) => {
   try {
-    // แอดมินต้องเห็นทั้งหมด ไม่มีการกรอง status ออก
     const facilities = await Facility.find().sort({ type: 1, name: 1 });
     res.status(200).json(facilities);
   } catch (error) {
     console.error('Error fetching admin facilities:', error);
-    res.status(500).json({ message: 'ไม่สามารถดึงข้อมูลสำหรับแอดมินได้' });
+    res.status(500).json({ message: 'ไม่สามารถดึงข้อมูลได้' });
   }
 };
 
-// 3. 🛑 สำหรับ Admin: ฟังก์ชันสลับสถานะห้อง ปิดปรับปรุง <-> เปิดให้บริการ
+//Admin สลับสถานะห้อง ปิดปรับปรุง / เปิดให้บริการ
 export const toggleFacilityStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -66,7 +63,6 @@ export const toggleFacilityStatus = async (req, res) => {
       return res.status(404).json({ message: 'ไม่พบสถานที่นี้ในระบบ' });
     }
 
-    // สลับค่าสถานะไปมาตาม enum ของมึงเป๊ะๆ
     if (facility.status === 'เปิดให้บริการ') {
       facility.status = 'ปิดปรับปรุง';
     } else {
@@ -81,7 +77,7 @@ export const toggleFacilityStatus = async (req, res) => {
   }
 };
 
-// 4. ฟังก์ชัน getFacilityById ที่ดึงข้อมูลผ่าน ID รายห้อง
+//ดึงข้อมูลห้องผ่าน ID รายห้อง
 export const getFacilityById = async (req, res) => {
   try {
     const facility = await Facility.findById(req.params.id);

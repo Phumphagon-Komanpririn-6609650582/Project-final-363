@@ -5,11 +5,11 @@ const redeemHistorySchema = new mongoose.Schema({
   studentId: {
     type: String,
     required: true,
-    index: true // ทำ Index ไว้เพื่อเวลาที่นักศึกษาดึงประวัติส่วนตัว หรือแอดมินค้นหาจะได้เร็วขึ้น
+    index: true
   },
   rewardId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Reward', // เชื่อมความสัมพันธ์โยงไปหาคอลเลกชัน Reward ของรางวัล
+    ref: 'Reward',
     required: true
   },
   rewardName: {
@@ -23,7 +23,7 @@ const redeemHistorySchema = new mongoose.Schema({
   ticketCode: {
     type: String,
     required: true,
-    unique: true // รหัสตั๋วห้ามซ้ำกันเด็ดขาดในระบบ
+    unique: true
   },
   status: {
     type: String,
@@ -32,7 +32,7 @@ const redeemHistorySchema = new mongoose.Schema({
     required: true
   }
 }, { 
-  timestamps: true // บังคับให้สร้างฟิลด์ createdAt และ updatedAt อัตโนมัติ (สำคัญมากเพราะหน้าบ้านใช้เรียงคิวจากใหม่ไปเก่า)
+  timestamps: true
 });
 
 const RedeemHistory = mongoose.model('RedeemHistory', redeemHistorySchema);

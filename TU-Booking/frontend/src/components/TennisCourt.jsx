@@ -11,11 +11,9 @@ function TennisCourt({ onBack, user }) {
     new Date().toLocaleDateString('th-TH', { day: '2-digit', month: '2-digit', year: '2-digit' })
   );
 
-  // 1. แยกฟังก์ชัน fetch ออกมาเป็น useCallback เพื่อเรียกซ้ำหลังจองเสร็จ
   const fetchTennisCourts = useCallback(async () => {
     try {
       setLoading(true);
-      // ส่ง date ไปให้หลังบ้านเช็คสถานะว่างจริงจากตาราง bookings ด้วย
       const response = await fetch(`http://localhost:4000/api/facilities?type=Sport&date=${selectedDate}`);
       const data = await response.json();
 
@@ -30,7 +28,7 @@ function TennisCourt({ onBack, user }) {
         type: court.type, 
         slots: court.slots.map(slot => ({
           time: slot.time,
-          isAvailable: slot.isAvailable // 👉 รับค่า boolean ที่คำนวณมาจากหลังบ้าน
+          isAvailable: slot.isAvailable
         }))
       }));
 
@@ -46,44 +44,36 @@ function TennisCourt({ onBack, user }) {
     fetchTennisCourts();
   }, [fetchTennisCourts]);
 
-  // 👉 อัปเดตฟังก์ชันดักการกดสล็อตเวลาที่ผ่านมาแล้ว
   const handleSlotClick = (courtId, courtName, time, isAvailable) => {
-    // 1. เช็คว่าสล็อตนี้เต็มหรือมีคนจองไปแล้วหรือยัง
     if (!isAvailable) {
       alert("⚠️ ช่วงเวลานี้ถูกจองไปแล้วครับ!");
       return;
     }
 
-    // 2. 🛡️ เช็คว่าสล็อตเวลานี้เลยเวลาปัจจุบันไปหรือยัง
     try {
       const [d, m, y] = selectedDate.split('/');
       let year = parseInt(y);
       
-      // แปลงปี พ.ศ. ของไทย เป็น ค.ศ. ให้ Date Object คํานวณได้ถูกต้อง ปรับให้ปลอดภัยขึ้น
       if (year < 100) {
-        year = year + 2500 - 543; // กรณีมาเป็น 69 -> 2569 -> 2026
+        year = year + 2500 - 543;
       } else if (year > 2500) {
-        year = year - 543; // กรณีมาเป็น 2569 -> 2026
+        year = year - 543;
       }
-      // หมายเหตุ: ถ้าค่าส่งมาเป็น ค.ศ. อยู่แล้ว (เช่น 2026) มันจะไม่เข้าเงื่อนไขไหนเลย ซึ่งถูกต้องแล้ว
 
-      // ดึงเวลาเริ่มต้นของสล็อต (เช่น "17:00 - 18:00" ดึงออกมาแค่ "17:00")
       const startTime = time.split('-')[0].trim();
       const [hh, mm] = startTime.split(':');
 
       const slotDateTime = new Date(year, parseInt(m) - 1, parseInt(d), parseInt(hh), parseInt(mm));
       const now = new Date();
 
-      // ถ้าเวลาของสล็อตน้อยกว่าเวลาปัจจุบัน แปลว่าเลยรอบไปแล้ว
       if (slotDateTime < now) {
-        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้วครับ!");
-        return; // บล็อกไว้ ไม่ให้เปิด Modal ยืนยันการจอง
+        alert("❌ ไม่สามารถจองได้ เนื่องจากเลยรอบเวลานี้ไปแล้ว!");
+        return;
       }
     } catch (error) {
       console.error("Error parsing date/time validation:", error);
     }
 
-    // ถ้าว่างและยังไม่เลยเวลา ให้เปิด Modal จองได้ตามปกติ
     setSelectedBooking({ courtId, courtName, time, date: selectedDate });
     setIsModalOpen(true);
   };
@@ -93,9 +83,9 @@ function TennisCourt({ onBack, user }) {
     const currentCourt = courts.find(c => c.id === courtId);
 
     const bookingData = {
-      studentId: user?.studentId || "6609650582",
+      studentId: user?.studentId,
       facilityId: courtId,      
-      facilityName: currentCourt?.title || "Tennis Court",
+      facilityName: currentCourt?.title,
       roomName: currentCourt?.name || courtName,
       bookingDate: date,        
       timeSlot: time,
@@ -113,7 +103,6 @@ function TennisCourt({ onBack, user }) {
 
       if (response.ok) {
         alert('🎉 จองสำเร็จ!');
-        // 👉 สั่ง Refresh ข้อมูลใหม่ทันที ปุ๊บปั๊บปุ่มเปลี่ยนเป็นสีแดง (Unavailable)
         fetchTennisCourts(); 
       } else {
         alert(result.message || 'เกิดข้อผิดพลาดในการจอง');
@@ -148,7 +137,6 @@ function TennisCourt({ onBack, user }) {
             <div key={court.id} className="court-booking-card">
               <h3 className="court-title">{court.title}</h3>
               <div className="court-details">
-                {/* 👉 เพิ่มตัวดักรูปภาพพัง (Image Fallback) ป้องกันการ์ดเบี้ยว */}
                 <img 
                   src={court.img} 
                   alt={court.name} 

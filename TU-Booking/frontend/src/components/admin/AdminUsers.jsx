@@ -3,9 +3,9 @@ import React, { useState, useEffect } from 'react';
 function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState(''); // State คอยดักคำค้นหา
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // ฟังก์ชันยิง Fetch กวาดรายชื่อนักศึกษาทั้งหมดมาจากฐานข้อมูลจริง
+  // ฟังก์ชันรายชื่อนักศึกษาทั้งหมดมาจากฐานข้อมูล
   const fetchUsers = async () => {
     try {
       setLoading(true);
@@ -25,16 +25,16 @@ function AdminUsers() {
     fetchUsers();
   }, []);
 
-  // ฟังก์ชันกดปุ่มปลดแบนฉุกเฉิน ยิงไปล้างแต้ม No-show ใน MongoDB ทันที
+  // ฟังก์ชันกดปุ่มปลดแบนฉุกเฉิน
   const handleUnban = async (studentId, name) => {
-    if (window.confirm(`คุณต้องการ "ปลดแบนและรีเซ็ตแต้มผิดกฎ" ให้กับคุณ ${name} ใช่หรือไม่?`)) {
+    if (window.confirm(`คุณต้องการปลดแบนและรีเซ็ตแต้มผิดกฎให้กับคุณ ${name} ใช่หรือไม่?`)) {
       try {
         const response = await fetch(`http://localhost:4000/api/bookings/admin/clear-penalty/${studentId}`, {
           method: 'PUT'
         });
         if (response.ok) {
           alert('🔓 ปลดระงับสิทธิ์และรีเซ็ตประวัติความประพฤตินักศึกษาสำเร็จ!');
-          fetchUsers(); // สั่งรีเฟรชตารางอัปเดตสีไฟทันที
+          fetchUsers();
         } else {
           alert('ไม่สามารถปลดแบนได้');
         }
@@ -45,7 +45,7 @@ function AdminUsers() {
     }
   };
 
-  // 🎯 เครื่องยนต์ฟิลเตอร์คัดกรองคำค้นหา (Realtime Search Filter)
+  //กรองคำค้นหา
   const filteredUsers = users.filter(user => {
     const sId = user.studentId ? user.studentId.toLowerCase() : '';
     const sName = user.name ? user.name.toLowerCase() : '';
@@ -57,19 +57,17 @@ function AdminUsers() {
   return (
     <div className="admin-dashboard-container" style={{ padding: '2rem', backgroundColor: '#EEF0F8', minHeight: '100vh' }}>
       
-      {/* ส่วนหัวข้อหลัก */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
         <div>
           <h1 className="admin-page-title" style={{ fontSize: '2rem', fontWeight: 'bold', color: '#333', display: 'flex', alignItems: 'center', gap: '10px', margin: 0 }}>
             <i className="fa-solid fa-users-gear" style={{ color: '#555' }}></i> จัดการผู้ใช้งานและสิทธิ์การจอง
           </h1>
           <p className="admin-page-subtitle" style={{ color: '#666', marginTop: '0.5rem', margin: 0 }}>
-            ตรวจสอบประวัติความประพฤติ และกดล้างมลทินคืนสิทธิ์จองให้นักศึกษาได้ทันทีเมื่อระบบขัดข้อง
+            ตรวจสอบประวัติความประพฤติ และคืนสิทธิ์จองให้นักศึกษาได้ทันทีเมื่อระบบขัดข้อง
           </p>
         </div>
       </div>
 
-      {/* 🔍 กล่องแถค้นหาอัจฉริยะ (Search Bar) */}
       <div style={{ marginBottom: '1.5rem', position: 'relative', maxWidth: '400px' }}>
         <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#999' }}></i>
         <input
@@ -99,12 +97,10 @@ function AdminUsers() {
       </div>
 
       {loading ? (
-        <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังกวาดดึงบัญชีรายชื่อนักศึกษาจากระบบหลังบ้าน...</p>
+        <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>กำลังดึงรายชื่อนักศึกษา...</p>
       ) : (
-        /* --- ตารางรายชื่อนักศึกษาเวอร์ชันคลีนระบบ --- */
         <div className="booking-table-container" style={{ backgroundColor: '#FFF', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
           
-          {/* หัวตาราง */}
           <div className="booking-table-header" style={{ display: 'flex', fontWeight: 'bold', padding: '1rem', backgroundColor: '#F8F9FA', borderBottom: '2px solid #EEE', color: '#444' }}>
             <div style={{ flex: 1.5, textAlign: 'center' }}>รหัสนักศึกษา</div>
             <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem' }}>ชื่อ-นามสกุลนักศึกษา</div>
@@ -114,27 +110,22 @@ function AdminUsers() {
             <div style={{ flex: 2.0, textAlign: 'center' }}>จัดการสิทธิ์</div>
           </div>
 
-          {/* เรนเดอร์แถวข้อมูลที่ผ่านตัวกรองค้นหา */}
           {filteredUsers.length > 0 ? (
             filteredUsers.map((student) => (
               <div key={student._id} className="booking-table-row" style={{ display: 'flex', alignItems: 'center', padding: '1.1rem 1rem', borderBottom: '1px solid #EEE' }}>
                 
-                {/* 1. รหัสนักศึกษา */}
                 <div style={{ flex: 1.5, textAlign: 'center', fontFamily: 'monospace', fontWeight: 'bold', color: '#0056B3' }}>
                   {student.studentId}
                 </div>
                 
-                {/* 2. ชื่อ-นามสกุล */}
                 <div style={{ flex: 2.5, textAlign: 'left', paddingLeft: '1rem', fontWeight: '500', color: '#333' }}>
                   {student.name}
                 </div>
                 
-                {/* 3. สถิติทำผิดนัดสะสม */}
                 <div style={{ flex: 1.5, textAlign: 'center', fontWeight: 'bold', color: student.status === 'ถูกระงับสิทธิ์' ? '#E31B23' : (student.noShowCount > 0 ? '#F5A623' : '#1E8E3E') }}>
                   {student.noShowCount} / 3 ครั้ง
                 </div>
                 
-                {/* 4. ป้ายสถานะสีสลับตามเบสจริง */}
                 <div style={{ flex: 1.5, textAlign: 'center' }}>
                   <span style={{
                     backgroundColor: student.status === 'ปกติ' ? '#8BE3A8' : '#FFB3B3',
@@ -145,12 +136,10 @@ function AdminUsers() {
                   </span>
                 </div>
                 
-                {/* 5. กำหนดเวลาปลดแบนอัตโนมัติ 👉 [แก้ไขจุดบั๊ก] บังคับโชว์แค่วันของคนที่สถานะโดนแบนเท่านั้น */}
                 <div style={{ flex: 2.0, textAlign: 'center', color: '#666', fontSize: '0.9rem' }}>
                   {student.status === 'ถูกระงับสิทธิ์' && student.banUntil ? `📅 ถึงวันที่ ${student.banUntil}` : '—'}
                 </div>
                 
-                {/* 6. เครื่องมือปุ่มปลดแบน 👉 [แก้ไขจุดบั๊ก] บังคับให้ปุ่มขึ้นเฉพาะคนที่โดนระงับสิทธิ์จริงเท่านั้น */}
                 <div style={{ flex: 2.0, textAlign: 'center' }}>
                   {student.status === 'ถูกระงับสิทธิ์' ? (
                     <button

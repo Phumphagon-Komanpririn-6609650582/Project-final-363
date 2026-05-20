@@ -3,9 +3,7 @@ import { useLocation } from 'react-router-dom';
 import UserProfileDropdown from './UserProfileDropdown'; 
 
 const routeConfig = {
-  // ==========================================
-  // โซนนักศึกษา (Student Panel)
-  // ==========================================
+  // โซนนักศึกษา
   '/': { name: 'หมวดหมู่', parent: null },
   '/sport': { name: 'Sport', parent: '/' },
   '/tennis_court': { name: 'Tennis Court', parent: '/sport' },
@@ -20,10 +18,8 @@ const routeConfig = {
   '/news': { name: 'ข่าวสารและประกาศ', parent: null },
   '/my-booking': { name: 'การจองของฉัน', parent: null },
   '/rewards': { name: 'แลกของรางวัล', parent: null },
-  
-  // ==========================================
-  // โซนผู้ดูแลระบบ (Admin Panel) - เรียงตามเมนู Sidebar จริง
-  // ==========================================
+
+  // โซนผู้ดูแลระบบ
   '/admin/dashboard': { name: 'Dashboard สถิติ', parent: null },
   '/admin/facilities': { name: 'จัดการสถานที่และห้องใช้งาน', parent: null },
   '/admin/bookings': { name: 'อนุมัติการจอง', parent: null },
@@ -31,7 +27,6 @@ const routeConfig = {
   '/admin/users': { name: 'จัดการผู้ใช้', parent: null },
   '/admin/announcements': { name: 'ประกาศข่าวสาร', parent: null },
   
-  // แถมกรณีไม่มีพอร์ต /admin/ นำหน้าเผื่อมึงสลับใช้เร้าเตอร์สั้น
   '/admin-dashboard': { name: 'Dashboard สถิติ', parent: null },
   '/admin-reports': { name: 'แจ้งซ่อม/รายงานปัญหา', parent: null },
   '/admin-facilities': { name: 'จัดการสถานที่และห้องใช้งาน', parent: null },
@@ -43,12 +38,11 @@ const routeConfig = {
 function Header({ userPoints: initialPoints }) {
   const location = useLocation();
   const studentId = localStorage.getItem('studentId');
-  const userRole = localStorage.getItem('role'); // ตรวจสอบบทบาทผู้ใช้งาน 'admin' หรือ 'student'
+  const userRole = localStorage.getItem('role');
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [dbUser, setDbUser] = useState(null);
 
-  // การแสดงผลข้อความฝั่งขวาตามสั่ง: "Admin : ชื่อแอดมิน"
   let displayID = '';
   if (userRole === 'admin') {
     const adminName = dbUser?.name || localStorage.getItem('name') || 'ผู้ดูแลระบบ';
@@ -57,7 +51,6 @@ function Header({ userPoints: initialPoints }) {
     displayID = studentId || 'ผู้ใช้งาน';
   }
 
-  // ฟังก์ชันสอยข้อมูลโปรไฟล์ล่าสุดจาก MongoDB
   const fetchUserProfile = useCallback(async () => {
     try {
       if (!studentId || userRole === 'admin') return; 
@@ -82,7 +75,6 @@ function Header({ userPoints: initialPoints }) {
     setIsProfileOpen(!isProfileOpen);
   };
 
-  // ฟังก์ชันคำนวณข้อความส่วนหัว Breadcrumb ด้านซ้าย
   const getBreadcrumbText = (pathname) => {
     if (pathname.includes('/admin/bookings') || pathname.includes('/bookings')) {
       return "อนุมัติการจอง";
@@ -106,7 +98,6 @@ function Header({ userPoints: initialPoints }) {
   return (
     <header className="header-container">
       
-      {/* 🧭 ข้อความบอกหมวดหมู่ด้านซ้าย */}
       <div className="header-left">
         <span className="header-text" style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827' }}>
           {getBreadcrumbText(location.pathname)}
@@ -115,10 +106,8 @@ function Header({ userPoints: initialPoints }) {
 
       <div className="header-right" style={{ position: 'relative' }}>
         
-        {/* 🔔 บล็อกกระดิ่งแจ้งเตือน: แสดงผลทุกสถานะ (ทั้งสิทธิ์ Student และ Admin เห็นหมดชิวๆ) */}
         <i className="fa-regular fa-bell bell-icon" style={{ marginRight: '12px', cursor: 'pointer' }}></i>
         
-        {/* แสดงป้ายชื่อ Admin : ชื่อจริง หรือ รหัส นศ. */}
         <span className="header-text" style={{ 
           fontWeight: 'bold', 
           color: userRole === 'admin' ? '#E31B23' : '#555',
@@ -128,7 +117,6 @@ function Header({ userPoints: initialPoints }) {
           {displayID}
         </span>
         
-        {/* 👉 🎯 [ซ่อนเฉพาะไอคอนรูปคน] ซ่อนวงกลม Avatar ทันทีถ้าเป็น Admin */}
         {userRole !== 'admin' && (
           <div 
             className="user-avatar" 
@@ -139,7 +127,6 @@ function Header({ userPoints: initialPoints }) {
           </div>
         )}
 
-        {/* ดรอปดาวน์แสดงผลเฉพาะฝั่งนักศึกษา */}
         {isProfileOpen && userRole !== 'admin' && (
           <UserProfileDropdown 
             userPoints={dbUser?.points !== undefined ? dbUser.points : initialPoints} 
